@@ -11,26 +11,21 @@ on:
 jobs:
   test-ocm:
     runs-on: ubuntu-latest
+    services:
+      ociregistry:
+        image: registry:2.8.1
+        env:
+          SOME_VAR: my_value
+        ports:
+          - 5000
+        volumes:
+          - /data:/data
+        options: --cpus 1 --name registry
     steps:
-    # - name: setup OCM
-    #   uses: open-component-model/ocm-setup-action@main
-    # - name: Run OCM
-    #   run: ocm --version
-    - name: Test Python
-      run: python --version
-  container-test-job:
-    runs-on: ubuntu-latest
-    container:
-      image: registry:2.8.1
-      env:
-        NODE_ENV: development
-      ports:
-        - 5000
-      volumes:
-        - /data:/data
-      options: --cpus 1 --name registry
-    steps:
-      - name: check space
-        run: df -h
-      - name: ls
-        run: ls -la /data
+    - name: setup OCM
+      uses: open-component-model/ocm-setup-action@main
+    - name: Run OCM
+      run: ocm --version
+    - name: Test OCM
+      run: ocm transfer artifacts gcr.io/google-containers/pause:3.2 localhost:5000/images:pause:3.2
+
