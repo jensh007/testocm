@@ -26,7 +26,7 @@ jobs:
         - 5000
       volumes:
         - my_docker_volume:/volume_mount
-      options: --cpus 1 --name registry --detach
+      options: --cpus 1 --name registry
     steps:
       - name: Check for dockerenv file
-        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
+        run: docker image list
