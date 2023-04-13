@@ -25,8 +25,12 @@ jobs:
       ports:
         - 5000
       volumes:
-        - my_docker_volume:/volume_mount
+        - /data:/data
       options: --cpus 1 --name registry
     steps:
-      - name: Check for dockerenv file
+      - name: docker list
         run: docker image list
+      - name: check space
+        run: df -h
+      - name: ls
+        run: ls -la /data
