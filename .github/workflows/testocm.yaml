@@ -26,5 +26,7 @@ jobs:
       uses: open-component-model/ocm-setup-action@main
     - name: Run OCM
       run: ocm --version
+    - name: Test Name
+      run: nslookup ociregistry
     - name: Test OCM
       run: ocm transfer artifacts gcr.io/google-containers/pause:3.2 ociregistry:5000/images/pause:3.2
