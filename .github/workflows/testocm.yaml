@@ -12,7 +12,7 @@ jobs:
   test-ocm:
     runs-on: ubuntu-latest
     services:
-      ociregistry:
+      ociregistry.mydomain:
         image: registry:2.8.1
         env:
           SOME_VAR: my_value
@@ -27,4 +27,4 @@ jobs:
     - name: Run OCM
       run: ocm --version
     - name: Test OCM
-      run: ocm transfer artifacts gcr.io/google-containers/pause:3.2 127.0.0.1:5000/images/pause:3.2
+      run: ocm transfer artifacts gcr.io/google-containers/pause:3.2 ociregistry.mydomain:5000/images/pause:3.2
