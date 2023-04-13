@@ -27,5 +27,4 @@ jobs:
     - name: Run OCM
       run: ocm --version
     - name: Test OCM
-      run: ocm transfer artifacts gcr.io/google-containers/pause:3.2 localhost/images/pause:3.2
-
+      run: ocm transfer artifacts gcr.io/google-containers/pause:3.2 127.0.0.1:5000/images/pause:3.2
