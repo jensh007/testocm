@@ -28,8 +28,6 @@ jobs:
         - /data:/data
       options: --cpus 1 --name registry
     steps:
-      - name: docker list
-        run: docker image list
       - name: check space
         run: df -h
       - name: ls
