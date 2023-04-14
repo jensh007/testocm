@@ -14,7 +14,6 @@ jobs:
         echo "fwdn hostame is: $HNAME"
         mkdir certs
         openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/ociregistry.key -addext "subjectAltName = DNS:${HNAME}" -x509 -days 365 -out certs/ociregistry.crt -subj "/C=DE/ST=Baden-Wuertemberg/L=Walldorf/O=SAP/OU=ocm/CN=${HNAME}"
-        ls -l certs
         openssl x509 -noout -text -in certs/ociregistry.crt
         sudo cp certs/ociregistry.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
