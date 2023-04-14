@@ -25,7 +25,12 @@ jobs:
           -e REGISTRY_HTTP_TLS_KEY=/certs/ociregistry.key registry:2.8.1
     - name: Test Docker Mounts
       run: |
-        sleep 2
+        while ! curl https://${HNAME}:5000/v2
+        do
+          echo "Waiting for container to become ready... still trying"
+          sleep 1
+        done
+        echo "$Registy container is ready"
     - name: Test Curl
       run: |
         HNAME=`hostname --fqdn`
