@@ -4,31 +4,10 @@ run-name: Test ocm CLI
 on:
   workflow_dispatch:
 # env:
-#   VERSION: "1.0.0"
-#   COMP_NAME: acme.org/demo/simpleserver
-#   PROVIDER: github.com/acme
-#   REPO_URL: ghcr.io/open-component-model/ocm
 jobs:
   test-ocm:
     runs-on: ubuntu-latest
-    services:
-      ociregistry:
-        image: registry:2.8.1
-        env:
-          REGISTRY_HTTP_ADDR: :80
-          # REGISTRY_HTTP_TLS_CERTIFICATE: /certs/ociregistry.crt
-          # REGISTRY_HTTP_TLS_KEY: /certs/ociregistry.key
-        ports:
-          - 80:80
-        volumes:
-          - ${{ github.workspace}}/certs:/certs
-        #   - /data:/data
-        options: --cpus 1 --name registry
     steps:
-    - name: setup OCM
-      uses: open-component-model/ocm-setup-action@main
-    - name: Run OCM
-      run: ocm --version
     - name: create-cert
       run: |
         HNAME=`hostname --fqdn`
@@ -40,11 +19,26 @@ jobs:
         openssl x509 -noout -text -in certs/ociregistry.crt
         sudo cp certs/ociregistry.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
-    - name: Test Curl
+    - name: start docker registry
+      run: |
+        docker run -d -p 443:443 -v ${{ github.workspace}}/certs:/certs --name registry \
+          -e REGISTRY_HTTP_ADDR=:443 -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/ociregistry.crt \
+          -e REGISTRY_HTTP_TLS_KEY=/certs/ociregistry.key registry:2.8.1
+    - name: Wait for OCI registry to become ready
+      timeout-minutes: 1
       run: |
         HNAME=`hostname --fqdn`
-        curl -v  http://${HNAME}/v2
-    # - name: Test OCM
-    #   run: |
-    #     HNAME=`hostname --fqdn`
-    #     ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}:5000/images/pause:3.2
+        while ! curl https://${HNAME}/v2
+        do
+          echo "Waiting for container to become ready... still trying"
+          sleep 1
+        done
+        echo "$Registy container is ready"
+    - name: Test OCM
+      run: |
+        HNAME=`hostname --fqdn`
+        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}:5000/images/pause:3.2
+    - name: stop docker registry
+      run: |
+        docker container stop registry
+        docker container rm -v registry
