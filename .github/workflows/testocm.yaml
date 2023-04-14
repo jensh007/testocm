@@ -43,4 +43,8 @@ jobs:
     - name: Test OCM
       run: |
         HNAME=`hostname --fqdn`
+        curl -v  ${HNAME}/v2
+    - name: Test OCM
+      run: |
+        HNAME=`hostname --fqdn`
         ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
