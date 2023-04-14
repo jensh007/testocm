@@ -15,11 +15,11 @@ jobs:
       ociregistry:
         image: registry:2.8.1
         env:
-          REGISTRY_HTTP_ADDR: :5000
+          REGISTRY_HTTP_ADDR: :80
           # REGISTRY_HTTP_TLS_CERTIFICATE: /certs/ociregistry.crt
           # REGISTRY_HTTP_TLS_KEY: /certs/ociregistry.key
         ports:
-          - 5000:5000
+          - 80:80
         volumes:
           - ${{ github.workspace}}/certs:/certs
         #   - /data:/data
@@ -43,7 +43,7 @@ jobs:
     - name: Test Curl
       run: |
         HNAME=`hostname --fqdn`
-        curl -v  http://${HNAME}:5000/v2
+        curl -v  http://${HNAME}/v2
     # - name: Test OCM
     #   run: |
     #     HNAME=`hostname --fqdn`
