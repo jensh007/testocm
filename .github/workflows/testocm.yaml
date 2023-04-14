@@ -15,11 +15,11 @@ jobs:
       ociregistry:
         image: registry:2.8.1
         env:
-          REGISTRY_HTTP_ADDR: :443
+          REGISTRY_HTTP_ADDR: :4430
           REGISTRY_HTTP_TLS_CERTIFICATE: /certs/ociregistry.crt
           REGISTRY_HTTP_TLS_KEY: /certs/ociregistry.key
         ports:
-          - 443:443
+          - 4430:4430
         volumes:
           - ${{ github.workspace}}/certs:/certs
         #   - /data:/data
@@ -43,12 +43,8 @@ jobs:
     - name: Test OCM
       run: |
         HNAME=`hostname --fqdn`
-        curl -v  https://localhost:443/v2
+        curl -v  https://${HNAME}:4430/v2
     - name: Test OCM
       run: |
         HNAME=`hostname --fqdn`
-        curl -v  https://${HNAME}/v2
-    - name: Test OCM
-      run: |
-        HNAME=`hostname --fqdn`
-        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
+        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}:4430/images/pause:3.2
