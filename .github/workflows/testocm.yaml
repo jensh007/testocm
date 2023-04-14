@@ -21,7 +21,7 @@ jobs:
         openssl x509 -noout -text -in certs/ociregistry.crt
         sudo cp certs/ociregistry.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
-    - name: start docker registry
+    - name: start OCI registry (docker)
       run: |
         docker run -d -p 443:443 -v ${{ github.workspace}}/certs:/certs --name registry \
           -e REGISTRY_HTTP_ADDR=:443 -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/ociregistry.crt \
@@ -39,7 +39,7 @@ jobs:
     - name: Test OCM
       run: |
         HNAME=`hostname --fqdn`
-        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}:5000/images/pause:3.2
+        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
     - name: stop docker registry
       run: |
         docker container stop registry
