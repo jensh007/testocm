@@ -23,7 +23,8 @@ jobs:
         docker run -d -p 5000:5000 -v ${{ github.workspace}}/certs:/certs --name registry \
           -e REGISTRY_HTTP_ADDR=:5000 -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/ociregistry.crt \
           -e REGISTRY_HTTP_TLS_KEY=/certs/ociregistry.key registry:2.8.1
-    - name: Test Docker Mounts
+    - name: Wait fort registry
+      timeout-minutes: 1
       run: |
         HNAME=`hostname --fqdn`
         while ! curl https://${HNAME}:5000/v2
