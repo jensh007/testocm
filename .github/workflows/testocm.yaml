@@ -19,7 +19,7 @@ jobs:
           REGISTRY_HTTP_TLS_CERTIFICATE: /certs/ociregistry.crt
           REGISTRY_HTTP_TLS_KEY: /certs/ociregistry.key
         ports:
-          - 443:5000
+          - 5000:5000
         volumes:
           - ${{ github.workspace}}/certs:/certs
         #   - /data:/data
@@ -43,7 +43,7 @@ jobs:
     - name: Test Curl
       run: |
         HNAME=`hostname --fqdn`
-        curl -v  https://${HNAME}/v2
+        curl -v  https://${HNAME}:5000/v2
     # - name: Test OCM
     #   run: |
     #     HNAME=`hostname --fqdn`
