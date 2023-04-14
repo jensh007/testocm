@@ -43,7 +43,7 @@ jobs:
     - name: Test OCM
       run: |
         HNAME=`hostname --fqdn`
-        curl -v  https://${HNAME}:5000/v2
+        curl -v  http://${HNAME}:5000/v2
     - name: Test OCM
       run: |
         HNAME=`hostname --fqdn`
