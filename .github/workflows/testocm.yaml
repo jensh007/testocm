@@ -31,6 +31,6 @@ jobs:
     - name: Test Name2
       run: hostname --fqdn
     - name: Test Name3
-      run: nslookup `hostname``
+      run: nslookup `hostname`
     # - name: Test OCM
     #   run: ocm transfer artifacts gcr.io/google-containers/pause:3.2 ociregistry.local:5000/images/pause:3.2
