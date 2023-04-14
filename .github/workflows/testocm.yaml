@@ -8,6 +8,8 @@ jobs:
   test-ocm:
     runs-on: ubuntu-latest
     steps:
+    - name: setup OCM
+      uses: open-component-model/ocm-setup-action@main
     - name: create-cert
       run: |
         HNAME=`hostname --fqdn`
