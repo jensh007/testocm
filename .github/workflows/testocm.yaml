@@ -15,10 +15,13 @@ jobs:
       ociregistry:
         image: registry:2.8.1
         env:
-          SOME_VAR: my_value
+          REGISTRY_HTTP_ADDR: 0.0.0.0:443
+          REGISTRY_HTTP_TLS_CERTIFICATE: /certs/ociregistry.crt
+          REGISTRY_HTTP_TLS_KEY: /certs/ociregistry.key
         ports:
-          - 5000:5000
-        # volumes:
+          - 443:443
+        volumes:
+          - ${{ github.workspace}}/certs:/certs
         #   - /data:/data
         options: --cpus 1 --name registry
     steps:
