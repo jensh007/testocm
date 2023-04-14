@@ -9,4 +9,18 @@ jobs:
     steps:
     - name: docker1
       run: |
-        docker --version
+        docker run -d -p 5000:5000  --restart=always --name registry registry:2.8.1
+    - name: Test Curl
+      run: |
+        HNAME=`hostname --fqdn`
+        curl -v  http://${HNAME}:5000/v2
+    - name: Test Curl2
+      run: |
+        HNAME=`hostname --fqdn`
+        curl -v  http://localhost:5000/v2
+    - name: Stop registry
+      run: |
+        docker container stop registry
+        docker container rm -v registry
+    - name: Post
+      run: echo "Be Happy!"
