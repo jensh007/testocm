@@ -15,7 +15,7 @@ jobs:
       ociregistry:
         image: registry:2.8.1
         env:
-          REGISTRY_HTTP_ADDR: localhost:443
+          REGISTRY_HTTP_ADDR: :443
           REGISTRY_HTTP_TLS_CERTIFICATE: /certs/ociregistry.crt
           REGISTRY_HTTP_TLS_KEY: /certs/ociregistry.key
         ports:
