@@ -7,18 +7,27 @@ jobs:
   trydocker:
     runs-on: ubuntu-latest
     steps:
-    - name: docker1
+    - name: create-cert
       run: |
-        docker run -d -p 5000:5000  --restart=always --name registry registry:2.8.1
+        HNAME=`hostname --fqdn`
+        echo "pwd is: $PWD"
+        echo "fwdn hostame is: $HNAME"
+        sudo rm -rf certs
+        mkdir -p certs
+        openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/ociregistry.key -addext "subjectAltName = DNS:${HNAME}" -x509 -days 365 -out certs/ociregistry.crt -subj "/C=DE/ST=Baden-Wuertemberg/L=Walldorf/O=SAP/OU=ocm/CN=${HNAME}"
+        openssl x509 -noout -text -in certs/ociregistry.crt
+        sudo cp certs/ociregistry.crt /usr/local/share/ca-certificates
+        sudo update-ca-certificates
+    - name: start docker registry
+      run: |
+        docker run -d -p 5000:5000 -v ${{ github.workspace}}/certs:/certs --name registry \
+          -e REGISTRY_HTTP_ADDR=:5000 -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/ociregistry.crt \
+          -e REGISTRY_HTTP_TLS_KEY=/certs/ociregistry.key registry:2.8.1
     - name: Test Curl
       run: |
         HNAME=`hostname --fqdn`
-        curl -v  http://${HNAME}:5000/v2
-    - name: Test Curl2
-      run: |
-        HNAME=`hostname --fqdn`
-        curl -v  http://localhost:5000/v2
-    - name: Stop registry
+        curl -v  https://${HNAME}:5000/v2
+    - name: stop docker registry
       run: |
         docker container stop registry
         docker container rm -v registry
