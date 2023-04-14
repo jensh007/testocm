@@ -27,6 +27,10 @@ jobs:
     - name: Run OCM
       run: ocm --version
     - name: Test Name
-      run: ping ociregistry.local
-    - name: Test OCM
-      run: ocm transfer artifacts gcr.io/google-containers/pause:3.2 ociregistry.local:5000/images/pause:3.2
+      run: hostname
+    - name: Test Name2
+      run: hostname --fqdn
+    - name: Test Name3
+      run: nslookup `hostname``
+    # - name: Test OCM
+    #   run: ocm transfer artifacts gcr.io/google-containers/pause:3.2 ociregistry.local:5000/images/pause:3.2
