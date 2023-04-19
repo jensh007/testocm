@@ -82,7 +82,6 @@ jobs:
       run: |
         echo ".ocmconfig file is:"
         cat ${HOME}/.ocmconfig
-        echo "FDQN_NAME is: ${{ env.FDQN_NAME }}"
         ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${{ env.FDQN_NAME }}/images/pause:3.2
     - name: stop docker registry
       if: always()
