@@ -62,7 +62,7 @@ jobs:
       run: |
         echo "Home is: ${HOME}"
         HNAME=`hostname --fqdn`
-        cat << 'EOF' >> ${HOME}/.ocmconfig
+        cat << EOF >> ${HOME}/.ocmconfig
         type: generic.config.ocm.software/v1
         configurations:
           - type: credentials.config.ocm.software
