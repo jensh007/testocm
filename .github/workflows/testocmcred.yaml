@@ -1,0 +1,66 @@
+name: test-ocm-cred
+# trigger manually
+run-name: Test ocm CLI with credentials
+on:
+  workflow_dispatch:
+# env:
+jobs:
+  test-ocm:
+    runs-on: ubuntu-latest
+    steps:
+    - name: setup OCM
+      uses: open-component-model/ocm-setup-action@main
+    - name: create-cert
+      run: |
+        HNAME=`hostname --fqdn`
+        echo "pwd is: $PWD"
+        echo "fwdn hostame is: $HNAME"
+        sudo rm -rf certs
+        mkdir -p certs
+        openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/ociregistry.key -addext "subjectAltName = DNS:${HNAME}" -x509 -days 365 -out certs/ociregistry.crt -subj "/C=DE/ST=Baden-Wuertemberg/L=Walldorf/O=SAP/OU=ocm/CN=${HNAME}"
+        openssl x509 -noout -text -in certs/ociregistry.crt
+        sudo cp certs/ociregistry.crt /usr/local/share/ca-certificates
+        sudo update-ca-certificates
+    - name: create credentials
+      run: |
+        mkdir auth
+        mkdir auth
+        htpasswd -Bbn ocmuser abc123 > auth/htpasswd
+        htpasswd -b -v auth/htpasswd ocmuser abc123
+    - name: start OCI registry (docker)
+      run: |
+        docker run -d -p 443:443  --name registry
+          -v ${{ github.workspace}}/certs:/certs \
+          -v ${{ github.workspace}}/auth:/auth \
+          -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+          -e REGISTRY_AUTH=htpasswd \
+          -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+          -e REGISTRY_HTTP_ADDR=:443 \
+          -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/ociregistry.crt \
+          -e REGISTRY_HTTP_TLS_KEY=/certs/ociregistry.key \
+          registry:2.8.1
+    - name: Wait for OCI registry to become ready
+      timeout-minutes: 1
+      run: |
+        HNAME=`hostname --fqdn`
+        while ! curl https://${HNAME}/v2
+        do
+          echo "Waiting for container to become ready... still trying"
+          sleep 1
+        done
+        echo "$Registy container is ready"
+    - name: Test OCM 1
+      continue-on-error: true
+      run: |
+        HNAME=`hostname --fqdn`
+        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
+    - name: Test OCM 2
+      continue-on-error: true
+      run: |
+        HNAME=`hostname --fqdn`
+        ocm --cred :type=OCIRegistry --cred ":hostname=${HNAME}" --cred "username=ocmuser" --cred "password=abc123"  transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
+    - name: stop docker registry
+      if: always()
+      run: |
+        docker container stop registry
+        docker container rm -v registry
