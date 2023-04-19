@@ -12,15 +12,16 @@ jobs:
       uses: open-component-model/ocm-setup-action@main
     - name: create-cert
       run: |
-        HNAME=`hostname --fqdn`
+        FDQN_NAME=`hostname --fqdn`
         echo "pwd is: $PWD"
-        echo "fwdn hostame is: $HNAME"
+        echo "fwdn hostame is: $FDQN_NAME"
         sudo rm -rf certs
         mkdir -p certs
-        openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/ociregistry.key -addext "subjectAltName = DNS:${HNAME}" -x509 -days 365 -out certs/ociregistry.crt -subj "/C=DE/ST=Baden-Wuertemberg/L=Walldorf/O=SAP/OU=ocm/CN=${HNAME}"
+        openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/ociregistry.key -addext "subjectAltName = DNS:${{ env.FDQN_NAME }}" -x509 -days 365 -out certs/ociregistry.crt -subj "/C=DE/ST=Baden-Wuertemberg/L=Walldorf/O=SAP/OU=ocm/CN=${{ env.FDQN_NAME }}"
         openssl x509 -noout -text -in certs/ociregistry.crt
         sudo cp certs/ociregistry.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
+        echo "FDQN_NAME=${{ env.FDQN_NAME }}" >> $GITHUB_ENV
     - name: create credentials
       run: |
         mkdir -p auth
@@ -41,8 +42,7 @@ jobs:
     - name: Wait for OCI registry to become ready
       timeout-minutes: 1
       run: |
-        HNAME=`hostname --fqdn`
-        while ! curl https://${HNAME}/v2
+        while ! curl https://${{ env.FDQN_NAME }}/v2
         do
           echo "Waiting for container to become ready... still trying"
           sleep 1
@@ -51,18 +51,15 @@ jobs:
     - name: Test OCM 1
       continue-on-error: true
       run: |
-        HNAME=`hostname --fqdn`
-        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
+        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${{ env.FDQN_NAME }}/images/pause:3.2
     - name: Test OCM 2
       continue-on-error: true
       run: |
-        HNAME=`hostname --fqdn`
-        ocm --cred :type=OCIRegistry --cred ":hostname=${HNAME}" --cred "username=ocmuser" --cred "password=abc123"  transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
+        ocm --cred :type=OCIRegistry --cred ":hostname=${{ env.FDQN_NAME }}" --cred "username=ocmuser" --cred "password=abc123"  transfer artifacts gcr.io/google-containers/pause:3.2 ${{ env.FDQN_NAME }}/images/pause:3.2
     - name: Write ocm credentials file
       run: |
         echo "Home is: ${HOME}"
         hostname --fqdn
-        HNAME=`hostname --fqdn`
         cat << EOF >> ${HOME}/.ocmconfig
         type: generic.config.ocm.software/v1
         configurations:
@@ -70,7 +67,7 @@ jobs:
             consumers:
               - identity:
                   type: OCIRegistry
-                  hostname: ${HNAME}
+                  hostname: ${{ env.FDQN_NAME }}
                 credentials:
                   - type: Credentials
                     properties:
@@ -82,10 +79,8 @@ jobs:
       run: |
         echo ".ocmconfig file is:"
         cat ${HOME}/.ocmconfig
-        HNAME=`hostname --fqdn`
-        echo "HNAME is: ${HNAME}"
-        ocm --help
-        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
+        echo "FDQN_NAME is: ${{ env.FDQN_NAME }}"
+        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${{ env.FDQN_NAME }}/images/pause:3.2
     - name: stop docker registry
       if: always()
       run: |
