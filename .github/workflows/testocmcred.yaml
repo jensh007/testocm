@@ -75,11 +75,11 @@ jobs:
                       username: ocmuser
                       password: abc123
         EOF
-        echo ".ocmconig file is:"
-        cat ${HOME}/.ocmconfig
     - name: Test OCM 3
       continue-on-error: true
       run: |
+        echo ".ocmconfig file is:"
+        cat ${HOME}/.ocmconfig
         HNAME=`hostname --fqdn`
         ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
     - name: stop docker registry
