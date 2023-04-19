@@ -75,7 +75,7 @@ jobs:
                   - type: Credentials
                     properties:
                       username: ocmuser
-                      password: ${{ env.PASSWD }}
+                      password: "${{ env.PASSWD }}"
         EOF
     - name: Test OCM 3
       continue-on-error: true
