@@ -14,7 +14,7 @@ jobs:
       run: |
         FDQN_NAME=`hostname --fqdn`
         HNAME=`hostname`
-        echo "pwd is: $PWD"
+        echo "working dir is: $PWD"
         echo "fqdn hostame is: $FDQN_NAME"
         sudo rm -rf certs
         mkdir -p certs
@@ -23,11 +23,14 @@ jobs:
         sudo cp certs/ociregistry.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
         echo "FDQN_NAME=${FDQN_NAME}" >> $GITHUB_ENV
-    - name: create credentials
+    - name: create user and credentials
       run: |
         mkdir -p auth
-        htpasswd -Bbn ocmuser abc123 > auth/htpasswd
-        htpasswd -b -v auth/htpasswd ocmuser abc123
+        # generate a random password
+        PASSWD=`head /dev/urandom | tr -dc 'A-Za-z0-9!#-$%&=+-' | head -c12`
+        htpasswd -Bbn ocmuser ${PASSWD} > auth/htpasswd
+        htpasswd -b -v auth/htpasswd ocmuser ${PASSWD}
+        echo "PASSWD=${PASSWD}" >> $GITHUB_ENV
     - name: start OCI registry (docker)
       run: |
         docker run -d -p 443:443  --name registry \
@@ -56,7 +59,7 @@ jobs:
     - name: Test OCM 2
       continue-on-error: true
       run: |
-        ocm --cred :type=OCIRegistry --cred ":hostname=${{ env.FDQN_NAME }}" --cred "username=ocmuser" --cred "password=abc123"  transfer artifacts gcr.io/google-containers/pause:3.2 ${{ env.FDQN_NAME }}/images/pause:3.2
+        ocm --cred :type=OCIRegistry --cred ":hostname=${{ env.FDQN_NAME }}" --cred "username=ocmuser" --cred "password=${{ env.PASSWD }}"  transfer artifacts gcr.io/google-containers/pause:3.2 ${{ env.FDQN_NAME }}/images/pause:3.2
     - name: Write ocm credentials file
       run: |
         echo "Home is: ${HOME}"
@@ -73,7 +76,7 @@ jobs:
                   - type: Credentials
                     properties:
                       username: ocmuser
-                      password: abc123
+                      password: {{ env.PASSWD }}
         EOF
     - name: Test OCM 3
       continue-on-error: true
