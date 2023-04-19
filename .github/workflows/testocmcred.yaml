@@ -61,6 +61,7 @@ jobs:
     - name: Write ocm credentials file
       run: |
         echo "Home is: ${HOME}"
+        HNAME=`hostname --fqdn`
         cat << 'EOF' >> ${HOME}/.ocmconfig
         type: generic.config.ocm.software/v1
         configurations:
@@ -68,7 +69,7 @@ jobs:
             consumers:
               - identity:
                   type: OCIRegistry
-                  hostname: TDT7W57RPY.dhcp.wdf.sap.corp
+                  hostname: ${HNAME}
                 credentials:
                   - type: Credentials
                     properties:
