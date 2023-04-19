@@ -12,5 +12,4 @@ jobs:
       run: |
         mkdir auth
         htpasswd -Bbn ocmuser abc123 > auth/htpasswd
-        ls -l auth
-        cat auth/htpasswd
+        htpasswd -b -v auth/htpasswd ocmuser abc123
