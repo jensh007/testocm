@@ -82,7 +82,9 @@ jobs:
         echo ".ocmconfig file is:"
         cat ${HOME}/.ocmconfig
         HNAME=`hostname --fqdn`
-        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
+        echo "HNAME is: ${HNAME}"
+        ocm --help
+        echo "ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2"
     - name: stop docker registry
       if: always()
       run: |
