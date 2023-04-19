@@ -61,6 +61,7 @@ jobs:
     - name: Write ocm credentials file
       run: |
         echo "Home is: ${HOME}"
+        hostname --fqdn
         HNAME=`hostname --fqdn`
         cat << EOF >> ${HOME}/.ocmconfig
         type: generic.config.ocm.software/v1
