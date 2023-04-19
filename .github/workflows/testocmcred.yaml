@@ -13,7 +13,7 @@ jobs:
     - name: create-cert
       run: |
         FDQN_NAME=`hostname --fqdn`
-        HNAME=`hostname``
+        HNAME=`hostname`
         echo "pwd is: $PWD"
         echo "fqdn hostame is: $FDQN_NAME"
         sudo rm -rf certs
