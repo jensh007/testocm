@@ -28,7 +28,7 @@ jobs:
         htpasswd -b -v auth/htpasswd ocmuser abc123
     - name: start OCI registry (docker)
       run: |
-        docker run -d -p 443:443  --name registry
+        docker run -d -p 443:443  --name registry \
           -v ${{ github.workspace}}/certs:/certs \
           -v ${{ github.workspace}}/auth:/auth \
           -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
