@@ -23,8 +23,7 @@ jobs:
         sudo update-ca-certificates
     - name: create credentials
       run: |
-        mkdir auth
-        mkdir auth
+        mkdir -p auth
         htpasswd -Bbn ocmuser abc123 > auth/htpasswd
         htpasswd -b -v auth/htpasswd ocmuser abc123
     - name: start OCI registry (docker)
