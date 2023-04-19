@@ -58,6 +58,30 @@ jobs:
       run: |
         HNAME=`hostname --fqdn`
         ocm --cred :type=OCIRegistry --cred ":hostname=${HNAME}" --cred "username=ocmuser" --cred "password=abc123"  transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
+    - name: Write ocm credentials file
+      run: |
+        echo "Home is: ${HOME}"
+        cat << 'EOF' >> ${HOME}/.ocmconfig
+        type: generic.config.ocm.software/v1
+        configurations:
+          - type: credentials.config.ocm.software
+            consumers:
+              - identity:
+                  type: OCIRegistry
+                  hostname: TDT7W57RPY.dhcp.wdf.sap.corp
+                credentials:
+                  - type: Credentials
+                    properties:
+                      username: ocmuser
+                      password: abc123
+        EOF
+        echo ".ocmconig file is:"
+        cat ${HOME}/.ocmconfig
+    - name: Test OCM 3
+      continue-on-error: true
+      run: |
+        HNAME=`hostname --fqdn`
+        ocm transfer artifacts gcr.io/google-containers/pause:3.2 ${HNAME}/images/pause:3.2
     - name: stop docker registry
       if: always()
       run: |
