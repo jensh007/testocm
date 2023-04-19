@@ -14,14 +14,14 @@ jobs:
       run: |
         FDQN_NAME=`hostname --fqdn`
         echo "pwd is: $PWD"
-        echo "fwdn hostame is: $FDQN_NAME"
+        echo "fqdn hostame is: $FDQN_NAME"
         sudo rm -rf certs
         mkdir -p certs
-        openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/ociregistry.key -addext "subjectAltName = DNS:${{ env.FDQN_NAME }}" -x509 -days 365 -out certs/ociregistry.crt -subj "/C=DE/ST=Baden-Wuertemberg/L=Walldorf/O=SAP/OU=ocm/CN=${{ env.FDQN_NAME }}"
+        openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/ociregistry.key -addext "subjectAltName = DNS:${FDQN_NAME}" -x509 -days 365 -out certs/ociregistry.crt -subj "/C=DE/ST=Baden-Wuertemberg/L=Walldorf/O=SAP/OU=ocm/CN=${FDQN_NAME}"
         openssl x509 -noout -text -in certs/ociregistry.crt
         sudo cp certs/ociregistry.crt /usr/local/share/ca-certificates
         sudo update-ca-certificates
-        echo "FDQN_NAME=${{ env.FDQN_NAME }}" >> $GITHUB_ENV
+        echo "FDQN_NAME=${FDQN_NAME}" >> $GITHUB_ENV
     - name: create credentials
       run: |
         mkdir -p auth
