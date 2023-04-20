@@ -15,6 +15,7 @@ jobs:
         FDQN_NAME=`hostname --fqdn`
         HNAME=`hostname`
         echo "working dir is: $PWD"
+        echo "home-dir: $HOME"
         echo "fqdn hostame is: $FDQN_NAME"
         sudo rm -rf certs
         mkdir -p certs
@@ -28,9 +29,11 @@ jobs:
         mkdir -p auth
         # generate a random password
         PASSWD=`head /dev/urandom | tr -dc 'A-Za-z0-9!#-$%&=+-' | head -c12`
+        USER_NAME=ocmuser
         htpasswd -Bbn ocmuser ${PASSWD} > auth/htpasswd
-        htpasswd -b -v auth/htpasswd ocmuser ${PASSWD}
+        htpasswd -b -v auth/htpasswd ${USER_NAME} ${PASSWD}
         echo "PASSWD=${PASSWD}" >> $GITHUB_ENV
+        echo "USER_NAME=${USER_NAME}" >> $GITHUB_ENV
     - name: start OCI registry (docker)
       run: |
         docker run -d -p 443:443  --name registry \
@@ -59,7 +62,7 @@ jobs:
     - name: Test OCM 2
       continue-on-error: true
       run: |
-        ocm --cred :type=OCIRegistry --cred ":hostname=${{ env.FDQN_NAME }}" --cred "username=ocmuser" --cred "password=${{ env.PASSWD }}"  transfer artifacts gcr.io/google-containers/pause:3.2 ${{ env.FDQN_NAME }}/images/pause:3.2
+        ocm --cred :type=OCIRegistry --cred ":hostname=${{ env.FDQN_NAME }}" --cred "username=${{ env.USER_NAME }}" --cred "password=${{ env.PASSWD }}"  transfer artifacts gcr.io/google-containers/pause:3.2 ${{ env.FDQN_NAME }}/images/pause:3.2
     - name: Write ocm credentials file
       run: |
         echo "Home is: ${HOME}"
@@ -74,7 +77,7 @@ jobs:
                 credentials:
                   - type: Credentials
                     properties:
-                      username: ocmuser
+                      username: ${{ env.USER_NAME }}
                       password: "${{ env.PASSWD }}"
         EOF
     - name: Test OCM 3
