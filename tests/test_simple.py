@@ -1,28 +1,19 @@
-import os
 import subprocess
+import time
 
-import ocmcli as ocm
 import pytest
 
-repo_prefix = os.getenv('FDQN_NAME')
-repo_host = repo_prefix[0:repo_prefix.find(':')] if ':' in repo_prefix else repo_prefix
-repo_dir = repo_prefix
-user_name = os.getenv('USER_NAME')
-passwd = os.getenv('PASSWD')
+import ocmcli as ocm
+from ocm_fixture import ctx, OcmTestContext
 
-def test_transfer_without_credentials():
+def test_transfer_without_credentials(ctx: OcmTestContext):
     with pytest.raises(subprocess.CalledProcessError) as excinfo:
-        ocm.execute_ocm(f'transfer artifacts gcr.io/google-containers/pause:3.2 {repo_dir}/images/pause:3.2', capture_output=True)
+        ocm.execute_ocm(f'transfer artifacts gcr.io/google-containers/pause:3.2 {ctx.repo_dir}/images/pause:3.2', capture_output=True)
     assert excinfo.value.stderr.decode('utf-8').find('401 Unauthorized') >= 0
 
 
-def test_transfer_with_credentials():
-    credential_options = f'--cred :type=OCIRegistry --cred :hostname={repo_host} --cred username={user_name} --cred password={passwd}'
-    ocm.execute_ocm(f'{credential_options} transfer artifacts gcr.io/google-containers/pause:3.2 {repo_dir}/images/pause:3.2')
+def test_transfer_with_credentials(ctx: OcmTestContext):
+    credential_options = f'--cred :type=OCIRegistry --cred :hostname={ctx.repo_host} --cred username={ctx.user_name} --cred password={ctx.passwd}'
+    ocm.execute_ocm(f'{credential_options} transfer artifacts gcr.io/google-containers/pause:3.2 {ctx.repo_dir}/images/pause:3.2')
 
 
-if __name__ == '__main__':
-    print('First test!')
-    test_transfer_without_credentials()
-    print('Second test!')
-    test_transfer_with_credentials()
