@@ -1,0 +1,5 @@
+pytest
+pyyaml
+gardener-component-model
+gardener-oci
+semver
