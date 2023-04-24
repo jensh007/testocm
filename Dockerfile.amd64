@@ -1,0 +1,5 @@
+FROM scratch
+COPY hello.amd64 /hello/hello
+# create a second layer with a text file:
+COPY VERSION /hello/VERSION
+ENTRYPOINT ["/hello/hello"]
