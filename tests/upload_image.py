@@ -15,7 +15,7 @@ def get_module_dir() -> Path:
 
 
 def upload_image(client: oc.Client, image_ref: str):
-    bin_file_in = 'hello.arm64'
+    bin_file_in = Path('local') / 'hello.arm64'
     bin_file_out = 'hello'
     version_file = 'VERSION'
     module_dir = get_module_dir()
@@ -38,6 +38,7 @@ def upload_image(client: oc.Client, image_ref: str):
 
     # create second layer with version file
     util.prepare_or_clean_dir(work_dir)
+    Path.mkdir(work_dir / dest_dir)
     src_file = module_dir / version_file
     dest_file = work_dir / dest_dir / version_file
     shutil.copy(src_file, dest_file)
@@ -54,6 +55,7 @@ def upload_image(client: oc.Client, image_ref: str):
     response = image_handler.create_and_upload_manifest(
         mimeType='application/vnd.docker.distribution.manifest.v2+json',
     )
+    shutil.rmtree(work_dir)
     print(f'response manifest upload: {response.status_code}')
 
 
