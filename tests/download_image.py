@@ -31,8 +31,7 @@ def download_image(client: oc.Client, image_ref: str):
 
     print(f'{type(manifest)=}')
     pprint.pprint(manifest.as_dict())
-    root_dir = 'image'
-    work_dir = get_module_dir() / root_dir
+    work_dir = get_module_dir() / '_out'
     util.prepare_or_clean_dir(work_dir)
     # write manifest to file:
     manifest_file = work_dir / 'manifest.json'
