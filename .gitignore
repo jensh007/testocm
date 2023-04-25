@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 certs*/
+local/
+_out/
