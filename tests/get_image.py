@@ -1,4 +1,5 @@
 import datetime
+import gzip
 import hashlib
 import json
 import os
@@ -6,8 +7,6 @@ from pathlib import Path
 import pprint
 import shutil
 import tarfile
-import time
-import typing
 import oci.auth as oa
 import oci.model as om
 import oci.client as oc
@@ -67,18 +66,28 @@ def prepare_work_dir(folder: str):
 
 
 def _create_tar_and_digest_from_dir(dir: Path, tar_file: str | Path) -> tuple[str, int]:
-    with tarfile.open(tar_file, 'w:gz') as tar:
+    temp_file = Path(tar_file).with_suffix('.tar')
+    with tarfile.open(temp_file, 'w') as tar:
         for child in dir.iterdir():
             tar.add(child, arcname=dir.name + '/' + child.name)
-    # create hash
-    with open(tar_file, 'rb') as f:
+
+    # create hash (we need uncompressed hash)
+    with open(temp_file, 'rb') as f:
         digest = hashlib.file_digest(f, 'sha256')
 
-    tar_size = tar_file.stat().st_size
+    uncompressed_digest = digest.hexdigest()
+    # uncompressed_size = temp_file.stat().st_size
 
-    return 'sha256:' + digest.hexdigest(), tar_size
+    with open(temp_file, 'rb') as f_in:
+        with gzip.open(tar_file, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
 
-def get_manifest_dict(architecture: str, os: str, entrypoint: str, layer_digests: list[str]) -> dict[str, str]:
+    temp_file.unlink()
+
+    return 'sha256:' + uncompressed_digest
+
+
+def _get_manifest_dict(architecture: str, os: str, entrypoint: str, layer_digests: list[str]) -> dict[str, str]:
     now_as_iso_str = datetime.datetime.now().isoformat() + 'Z'
     manifest = {
         'architecture': architecture,
@@ -103,9 +112,88 @@ def get_manifest_dict(architecture: str, os: str, entrypoint: str, layer_digests
 
     return manifest
 
+def _upload_blob_from_file(
+    file_name: Path | str,
+    client: oc.Client,
+    image_ref: str,
+    mimeType: str,
+) -> om.OciBlobRef:
+
+    man_size = file_name.stat().st_size
+    with open(file_name, 'rb') as f:
+        digest = hashlib.file_digest(f, 'sha256')
+    hex_digest = 'sha256:' + digest.hexdigest()
+
+    # upload to OCI registry
+    with open(file_name, 'rb') as data_input:
+        client.put_blob(
+            image_reference=image_ref,
+            digest=hex_digest,
+            mimetype=mimeType,
+            data=data_input,
+            octets_count=man_size,
+            max_chunk=4096,
+        )
+    return om.OciBlobRef(
+        mediaType = mimeType,
+        digest = hex_digest,
+        size = man_size,
+    )
+
+
+def _create_and_upload_image_config(
+    architecture: str,
+    os: str,
+    entrypoint: str,
+    layer_digests: list[str],
+    image_ref: str,
+    client: oc.Client,
+    file_name: str,
+) -> om.OciBlobRef:
+    manifest = _get_manifest_dict(
+        architecture=architecture,
+        os=os,
+        entrypoint=entrypoint,
+        layer_digests=layer_digests
+    )
+
+    with open(file_name, 'w') as f:
+        f.write(json.dumps(manifest))
+
+    blob_ref =_upload_blob_from_file(
+        file_name=file_name,
+        client=client,
+        image_ref=image_ref,
+        mimeType='application/vnd.docker.container.image.v1+json'
+    )
+    return blob_ref
+
+
+def _create_and_upload_layer_from_dir(
+    image_ref: str,
+    client: oc.Client,
+    dir: Path,
+    tar_file_name: str | Path
+) -> tuple[om.OciBlobRef, str]:
+    """
+    create an image layer from a local directory and upload it as tgz blob, return the uncompressed
+    sh256- hash
+    """
+    uncompressed_digest =  _create_tar_and_digest_from_dir(dir, tar_file_name)
+    print(f'File {tar_file_name} written')
+    blob_ref =_upload_blob_from_file(
+        file_name=tar_file_name,
+        client=client,
+        image_ref=image_ref,
+        mimeType='application/vnd.docker.image.rootfs.diff.tar.gzip'
+    )
+
+    return (blob_ref, uncompressed_digest)
+
 
 def upload_image(client: oc.Client, image_ref: str):
-    bin_file = 'hello.arm64'
+    bin_file_in = 'hello.arm64'
+    bin_file_out = 'hello'
     version_file = 'VERSION'
     module_dir = get_module_dir()
     work_dir = module_dir / 'image'
@@ -115,28 +203,13 @@ def upload_image(client: oc.Client, image_ref: str):
     prepare_work_dir(work_dir)
     print(f'{work_dir}')
     Path.mkdir(work_dir / dest_dir)
-    src_file = module_dir / bin_file
-    dest_file = work_dir / dest_dir / bin_file
+    src_file = module_dir / bin_file_in
+    dest_file = work_dir / dest_dir / bin_file_out
     shutil.copy(src_file, dest_file)
     # create gzipped tar:
     tar_file_name = work_dir / 'layer_1.tgz'
-    hex_digest, tar_size =  _create_tar_and_digest_from_dir(work_dir / dest_dir, tar_file_name)
-    print(f'File {tar_file_name} written, SHA-256 digest is: {hex_digest}, Size: {tar_size}')
-    blob_ref1 = om.OciBlobRef(
-        mediaType = 'application/vnd.docker.image.rootfs.diff.tar.gzip',
-        digest = hex_digest,
-        size = tar_size,
-    )
-    layer_digests.append(hex_digest)
-    with open(tar_file_name, 'rb') as data_input:
-        client.put_blob(
-            image_reference=image_ref,
-            digest=blob_ref1.digest,
-            mimetype=blob_ref1.mediaType,
-            data=data_input,
-            octets_count=blob_ref1.size,
-            max_chunk=4096,
-            )
+    blob_ref_1, digest = _create_and_upload_layer_from_dir(image_ref, client, work_dir / dest_dir, tar_file_name)
+    layer_digests.append(digest)
 
     # create second layer with hello folder and version file
     shutil.rmtree(work_dir / dest_dir)
@@ -145,53 +218,24 @@ def upload_image(client: oc.Client, image_ref: str):
     dest_file = work_dir / dest_dir / version_file
     shutil.copy(src_file, dest_file)
     tar_file_name = work_dir / 'layer_2.tgz'
-    hex_digest, tar_size =  _create_tar_and_digest_from_dir(work_dir / dest_dir, tar_file_name)
-    print(f'File {tar_file_name} written, SHA-256 digest is: {hex_digest}, Size: {tar_size}')
-    blob_ref2 = om.OciBlobRef(
-        mediaType = 'application/vnd.docker.image.rootfs.diff.tar.gzip',
-        digest = hex_digest,
-        size = tar_size,
-    )
-    layer_digests.append(hex_digest)
-    with open(tar_file_name, 'rb') as data_input:
-        client.put_blob(
-            image_reference=image_ref,
-            digest=blob_ref2.digest,
-            mimetype=blob_ref2.mediaType,
-            data=data_input,
-            octets_count=blob_ref2.size,
-            max_chunk=4096,
-            )
+
+    blob_ref_2, digest = _create_and_upload_layer_from_dir(image_ref, client, work_dir / dest_dir, tar_file_name)
+    layer_digests.append(digest)
 
     # add config layer with hello folder and version file
-    manifest = get_manifest_dict('arm64', os='linux', entrypoint='/hello/hello', layer_digests=layer_digests)
-    pprint.pprint(manifest)
-    man_file = work_dir / 'config.json'
-    with open(man_file, 'w') as f:
-        f.write(json.dumps(manifest))
-    man_size = man_file.stat().st_size
-    with open(man_file, 'rb') as f:
-        digest = hashlib.file_digest(f, 'sha256')
-    hex_digest = 'sha256:' + digest.hexdigest()
-    print(f'Config file {man_file} written,  SHA-256 digest is: {hex_digest}, Size: {tar_size}')
-    with open(man_file, 'rb') as data_input:
-        client.put_blob(
-            image_reference=image_ref,
-            digest=hex_digest,
-            mimetype='application/vnd.docker.container.image.v1+json',
-            data=data_input,
-            octets_count=blob_ref2.size,
-            max_chunk=4096,
-            )
-
-    config = om.OciBlobRef(
-        mediaType = "application/vnd.docker.container.image.v1+json",
-        digest = hex_digest,
-        size = man_size,
+    config_ref = _create_and_upload_image_config(
+        architecture='arm64',
+        os='linux',
+        entrypoint='/hello/hello',
+        layer_digests=layer_digests,
+        image_ref=image_ref,
+        client=client,
+        file_name= work_dir / 'config.json',
     )
+
     manifest = om.OciImageManifest(
-        config = config,
-        layers = (blob_ref1, blob_ref2),
+        config = config_ref,
+        layers = (blob_ref_1, blob_ref_2),
         mediaType = 'application/vnd.docker.distribution.manifest.v2+json',
         # mediaType = om.OCI_MANIFEST_SCHEMA_V2_MIME,
     )
@@ -203,7 +247,8 @@ def upload_image(client: oc.Client, image_ref: str):
         image_reference=image_ref,
         manifest=manifest_str.encode('utf-8'),
     )
-    print(f'response manifest upload: {response.status_code}, msg: {response.content}')
+    print(f'response manifest upload: {response.status_code}')
+
 
 def main():
     def _credentials_lookup(
