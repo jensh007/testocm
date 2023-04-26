@@ -1,4 +1,4 @@
-name: test-ocm-cred
+name: OCM Integration Tests
 # trigger manually
 run-name: OCM CLI Integration Tests
 on:
