@@ -93,13 +93,13 @@ class OciImageCreator:
             hex_digest = digest.hexdigest()
         else:
             BUF_SIZE = 65536
-            sha256 = hashlib.sha256
+            sha256 = hashlib.sha256()
             with open(temp_file, 'rb') as f:
                 while True:
                     data = f.read(BUF_SIZE)
                     if not data:
                         break
-                sha256.update(data)
+                    sha256.update(data)
             hex_digest = sha256.hexdigest()
 
         return 'sha256:' + hex_digest
