@@ -20,7 +20,6 @@ def upload_image(client: oc.Client, image_ref: str):
     version_file = 'VERSION'
     module_dir = get_module_dir()
     work_dir = module_dir / 'image'
-    layer_digests = []
     # create first layer with hello folder and binary
     dest_dir = 'hello'
     util.prepare_or_clean_dir(work_dir)
@@ -31,7 +30,12 @@ def upload_image(client: oc.Client, image_ref: str):
     shutil.copy(src_file, dest_file)
     out_dir = module_dir / '_out'
 
-    image_handler = oci_image.OciImageCreator(client, image_ref, out_dir)
+    image_handler = oci_image.OciImageCreator(
+        client,
+        image_ref,
+        out_dir,
+        oci_image.OciImageCreator.Style.DOCKER_STYLE,
+    )
 
     # create first layer:
     image_handler.create_and_upload_layer_from_dir(work_dir / dest_dir)
@@ -50,16 +54,13 @@ def upload_image(client: oc.Client, image_ref: str):
         architecture='arm64',
         os='linux',
         entrypoint='/hello/hello',
-        layer_digests=layer_digests,
     )
-    response = image_handler.create_and_upload_manifest(
-        mimeType='application/vnd.docker.distribution.manifest.v2+json',
-    )
+    response = image_handler.create_and_upload_manifest()
     shutil.rmtree(work_dir)
     print(f'response manifest upload: {response.status_code}')
 
 
-def main():
+def get_oci_client() -> oc.Client:
     def _credentials_lookup(
         image_reference: str,
         privileges: oa.Privileges=oa.Privileges.READONLY,
@@ -85,10 +86,13 @@ def main():
         gcr_key = f.read()
 
     # create and upload image:
-    client = oc.Client(
+    return oc.Client(
         credentials_lookup=_credentials_lookup,
         routes=oc.OciRoutes(oc.base_api_url),
     )
+
+def main():
+    client = get_oci_client()
     image_ref = 'eu.gcr.io/sap-cp-k8s-ocm-gcp-eu30-dev/dev/d058463/images/hello-amd64:0.1.0'
     upload_image(client, image_ref)
 

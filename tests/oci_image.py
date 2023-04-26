@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum, auto
 import gzip
 import hashlib
 import json
@@ -27,16 +28,44 @@ class OciImageCreator:
     and the manifest after manifest uploaded (for debugging purposes)
     """
 
+    class Style(Enum):
+        DOCKER_STYLE = auto(),
+        OCI_STYLE = auto()
 
-    def __init__(self, client: oc.Client, image_ref: str, out_dir: str | Path):
+
+    def __init__(
+        self, client: oc.Client,
+        image_ref: str,
+        out_dir: str | Path,
+        style: Style = Style.DOCKER_STYLE
+    ):
         self.client = client
         self.image_ref = image_ref
         self.out_dir = Path(out_dir)
         self.config_ref = None
         self.layer_digests = []
         self.blob_refs = []
-        self.layers = 0
+        self.set_mime_types(style)
         util.prepare_or_clean_dir(self.out_dir)
+
+
+    def set_mime_types(
+        self,
+        style: Style,
+    ):
+        # see: https://github.com/opencontainers/image-spec/blob/main/media-types.md
+        if style == self.Style.DOCKER_STYLE:
+            self.image_config_mime_type='application/vnd.docker.container.image.v1+json'
+            self.image_layer_mime_type = 'application/vnd.docker.image.rootfs.diff.tar.gzip'
+            self.manifest_mime_type = 'application/vnd.docker.distribution.manifest.v2+json'
+            self.multi_arch_manifest_mime_type = 'application/vnd.docker.distribution.manifest.list.v2+json'
+        elif style == self.Style.OCI_STYLE:
+            self.image_config_mime_type='application/vnd.oci.image.config.v1+json'
+            self.image_layer_mime_type = 'application/vnd.oci.image.layer.v1.tar+gzip'
+            self.manifest_mime_type = 'application/vnd.oci.image.manifest.v1+json'
+            self.multi_arch_manifest_mime_type = 'application/vnd.oci.image.index.v1+json'
+        else:
+            raise ValueError(f'Unknown Oci Image style {style}')
 
 
     def _create_tar_and_digest_from_dir(self, dir: Path, tar_file: str | Path) -> tuple[str, int]:
@@ -61,7 +90,7 @@ class OciImageCreator:
         return 'sha256:' + uncompressed_digest
 
 
-    def _get_manifest_dict(self, architecture: str, os: str, entrypoint: str, layer_digests: list[str]) -> dict[str, str]:
+    def _get_manifest_dict(self, architecture: str, os: str, entrypoint: str) -> dict[str, str]:
         now_as_iso_str = datetime.datetime.now().isoformat() + 'Z'
         manifest = {
             'architecture': architecture,
@@ -80,7 +109,7 @@ class OciImageCreator:
             }],
             'rootfs': {
                 'type': 'layers',
-                'diff_ids': layer_digests,
+                'diff_ids': self.layer_digests,
             }
         }
 
@@ -119,13 +148,11 @@ class OciImageCreator:
         architecture: str,
         os: str,
         entrypoint: str,
-        layer_digests: list[str],
     ) -> om.OciBlobRef:
         manifest = self._get_manifest_dict(
             architecture=architecture,
             os=os,
             entrypoint=entrypoint,
-            layer_digests=layer_digests
         )
 
         file_name = self.out_dir / 'config.json'
@@ -134,7 +161,7 @@ class OciImageCreator:
 
         self.config_ref = self._upload_blob_from_file(
             file_name=file_name,
-            mimeType='application/vnd.docker.container.image.v1+json'
+            mimeType=self.image_config_mime_type
         )
 
         return self.config_ref
@@ -153,7 +180,7 @@ class OciImageCreator:
         print(f'File {tar_file_name} written')
         blob_ref = self._upload_blob_from_file(
             file_name=tar_file_name,
-            mimeType='application/vnd.docker.image.rootfs.diff.tar.gzip'
+            mimeType=self.image_layer_mime_type
         )
 
         self.blob_refs.append(blob_ref)
@@ -164,12 +191,11 @@ class OciImageCreator:
 
     def create_and_upload_manifest(
         self,
-        mimeType: str,
     ):
         manifest = om.OciImageManifest(
             config = self.config_ref,
             layers = self.blob_refs,
-            mediaType = mimeType,
+            mediaType = self.manifest_mime_type,
         )
         manifest_str = json.dumps(manifest.as_dict())
 
