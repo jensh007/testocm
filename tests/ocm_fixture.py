@@ -44,12 +44,16 @@ configurations:
               password: {ctx.passwd}
 '''
     backup_file = Path(os.getenv('HOME')) / '.ocmconfig.bak'
-    config_path = Path(os.getenv('HOME')) / '.ocmconfig'
+    config_file = Path(os.getenv('HOME')) / '.ocmconfig'
+    # backup .ocmconfig if it exists
     if backup_file.exists():
         backup_file.unlink()
-    config_path.rename(backup_file)
-    with config_path.open('w') as f:
+    if config_file.exists():
+        config_file.rename(backup_file)
+    with config_file.open('w') as f:
         f.write(test_config)
     yield None
-    config_path.unlink()
-    backup_file.rename(config_path)
+    # restore original .ocmconfig if it existed after tests are run
+    config_file.unlink()
+    if backup_file.exists():
+        backup_file.rename(config_file)
