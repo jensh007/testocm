@@ -92,6 +92,7 @@ class OciImageCreator:
                 digest = hashlib.file_digest(f, 'sha256')
             hex_digest = digest.hexdigest()
         else:
+            BUF_SIZE = 65536
             sha256 = hashlib.sha256
             with open(temp_file, 'rb') as f:
                 while True:
