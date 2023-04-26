@@ -59,7 +59,7 @@ jobs:
       run: |
         location=`python3 -c "import certifi; print(certifi.where());"`
         cat ${{ github.workspace}}/certs/ociregistry.crt >> location
-        python -c "import urllib.request; urllib.request.urlopen('${{ env.FDQN_NAME }}')"
+        python -c "import urllib.request; urllib.request.urlopen('https://${{ env.FDQN_NAME }}')"
     - name: Test OCM 1
       continue-on-error: true
       run: |
