@@ -7,27 +7,17 @@ on:
     - cron: '0 2 * * *'  # every day at 2AM
 # env:
 jobs:
-  build-test-binaries:
-    runs-on: ubuntu-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: 1.20.2
-    - name: Build go Test Binaries
-      run: |
-        env GOOS=linux GOARCH=arm64 GO111MODULE=on go build -o local/hello.arm64 -ldflags '-extldflags "-static"' main.go
-        env GOOS=linux GOARCH=amd64 GO111MODULE=on go build -o local/hello.amd64 -ldflags '-extldflags "-static"' main.go
   test-ocm:
     runs-on: ubuntu-latest
-    needs: build-test-binaries
     steps:
     - name: checkout
       uses: actions/checkout@v3
     - name: setup OCM
       uses: open-component-model/ocm-setup-action@main
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.20.2
     - name: create-cert
       run: |
         FDQN_NAME=`hostname --fqdn`
@@ -64,6 +54,10 @@ jobs:
           -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/ociregistry.crt \
           -e REGISTRY_HTTP_TLS_KEY=/certs/ociregistry.key \
           registry:2.8.1
+    - name: Build go Test Binaries
+      run: |
+        env GOOS=linux GOARCH=arm64 GO111MODULE=on go build -o local/hello.arm64 -ldflags '-extldflags "-static"' main.go
+        env GOOS=linux GOARCH=amd64 GO111MODULE=on go build -o local/hello.amd64 -ldflags '-extldflags "-static"' main.go
     - name: Wait for OCI registry to become ready
       timeout-minutes: 1
       run: |
