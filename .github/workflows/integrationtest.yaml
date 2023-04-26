@@ -2,6 +2,7 @@ name: OCM Integration Tests
 # trigger manually
 run-name: OCM CLI Integration Tests
 on:
+  workflow_dispatch: ~
   schedule:
     - cron: '0 2 * * *'  # every day at 2AM
 # env:
