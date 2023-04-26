@@ -25,6 +25,10 @@ jobs:
         echo "working dir is: $PWD"
         echo "home-dir: $HOME"
         echo "fqdn hostame is: $FDQN_NAME"
+        if [ "$FDQN_NAME" = "$HNAME" ]; then
+          echo "Failed to get fully qualified hostname: $FQDN_NAME"
+          exit 1
+        fi
         sudo rm -rf certs
         mkdir -p certs
         openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/ociregistry.key -addext "subjectAltName = DNS:${FDQN_NAME}" -x509 -days 365 -out certs/ociregistry.crt -subj "/C=DE/ST=Baden-Wuertemberg/L=Walldorf/O=SAP/OU=ocm/CN=${HNAME}"
