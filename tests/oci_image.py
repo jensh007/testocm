@@ -3,11 +3,11 @@ from enum import Enum, auto
 import gzip
 import hashlib
 import json
-import os
 from pathlib import Path
-import pprint
 import shutil
 import tarfile
+import sys
+
 import oci.auth as oa
 import oci.model as om
 import oci.client as oc
@@ -75,11 +75,7 @@ class OciImageCreator:
                 tar.add(child, arcname=dir.name + '/' + child.name)
 
         # create hash (we need uncompressed hash)
-        with open(temp_file, 'rb') as f:
-            digest = hashlib.file_digest(f, 'sha256')
-
-        uncompressed_digest = digest.hexdigest()
-        # uncompressed_size = temp_file.stat().st_size
+        uncompressed_digest = self.file_digest(temp_file)
 
         with open(temp_file, 'rb') as f_in:
             with gzip.open(tar_file, 'wb') as f_out:
@@ -88,6 +84,24 @@ class OciImageCreator:
         temp_file.unlink()
 
         return 'sha256:' + uncompressed_digest
+
+    def file_digest(self, temp_file):
+        py_version = sys.version_info
+        if py_version.major >= 3 and py_version.minor >= 11:
+            with open(temp_file, 'rb') as f:
+                digest = hashlib.file_digest(f, 'sha256')
+            hex_digest = digest.hexdigest()
+        else:
+            sha256 = hashlib.sha256
+            with open(temp_file, 'rb') as f:
+                while True:
+                    data = f.read(BUF_SIZE)
+                    if not data:
+                        break
+                sha256.update(data)
+            hex_digest = sha256.hexdigest()
+
+        return 'sha256:' + hex_digest
 
 
     def _get_manifest_dict(self, architecture: str, os: str, entrypoint: str) -> dict[str, str]:
@@ -122,9 +136,7 @@ class OciImageCreator:
     ) -> om.OciBlobRef:
 
         man_size = file_name.stat().st_size
-        with open(file_name, 'rb') as f:
-            digest = hashlib.file_digest(f, 'sha256')
-        hex_digest = 'sha256:' + digest.hexdigest()
+        hex_digest = self.file_digest(file_name)
 
         # upload to OCI registry
         with open(file_name, 'rb') as data_input:

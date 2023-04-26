@@ -85,7 +85,7 @@ def get_oci_client() -> oc.Client:
     gcr_key_file = Path('local/gcr-key.json')
     gcr_key = None
     if gcr_key_file.exists():
-        with open() as f:
+        with open(gcr_key_file) as f:
             gcr_key = f.read()
 
     # create and upload image:
