@@ -71,7 +71,7 @@ def get_oci_client() -> oc.Client:
                         username=user_name,
                         password=passwd,
                     )
-        elif 'eu.gcr.io/sap-cp-k8s-ocm-gcp-eu30-dev' in image_reference:
+        elif gcr_key and 'eu.gcr.io/sap-cp-k8s-ocm-gcp-eu30-dev' in image_reference:
             return oa.OciBasicAuthCredentials(
                     username='_json_key',
                     password=gcr_key,
@@ -82,8 +82,11 @@ def get_oci_client() -> oc.Client:
     # setup credentials:
     user_name = os.getenv('USER_NAME')
     passwd = os.getenv('PASSWD')
-    with open('local/gcr-key.json') as f:
-        gcr_key = f.read()
+    gcr_key_file = Path('local/gcr-key.json')
+    gcr_key = None
+    if gcr_key_file.exists():
+        with open() as f:
+            gcr_key = f.read()
 
     # create and upload image:
     return oc.Client(
