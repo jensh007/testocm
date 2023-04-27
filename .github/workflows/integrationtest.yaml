@@ -32,7 +32,7 @@ jobs:
         fi
         if [ "$FDQN_NAME" = "$HNAME" ]; then
           echo "Failed to get fully qualified hostname: $FQDN_NAME"
-          exit 1
+          FDQN_NAME=`hostname`.
         fi
         sudo rm -rf certs
         mkdir -p certs
