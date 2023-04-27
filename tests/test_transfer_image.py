@@ -14,6 +14,13 @@ from oci_image import OciImageCreator
 
 
 pytestmark = pytest.mark.usefixtures("ocm_config")
+pytestmark_crane = pytest.mark.usefixtures("auth_crane")
+
+
+@pytest.fixture(scope="module")
+def auth_crane(ctx: OcmTestContext):
+    cmd_auth = ['crane', 'auth', 'login', ctx.repo_host, '-u', ctx.user_name, '-p', ctx.passwd]
+    subprocess.run(cmd_auth)
 
 
 def _validate_image(image_ref: str):
