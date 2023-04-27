@@ -76,7 +76,7 @@ jobs:
           sleep 1
         done
         echo "$Registy container is ready"
-    - name: Pyhon add CA
+    - name: Pyhton add CA
       run: |
         location=`python3 -c "import certifi; print(certifi.where());"`
         cat ${{ github.workspace}}/certs/ociregistry.crt >> location
@@ -87,6 +87,9 @@ jobs:
         pip install -r requirements.txt
     - name: Test with pytest
       run: |
+        if [ -e ${HOME}/.ocmconfig ]; then
+          rm ${HOME}/.ocmconfig
+        fi
         pytest ./tests
     - name: stop docker registry
       if: always()
