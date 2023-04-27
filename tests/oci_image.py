@@ -12,6 +12,7 @@ import oci.auth as oa
 import oci.model as om
 import oci.client as oc
 import gci.componentmodel as cm
+import requests
 
 import util
 
@@ -27,6 +28,16 @@ class OciImageCreator:
     The out_dir will be recursively deleted on init and will contain the created image config file
     and the manifest after manifest uploaded (for debugging purposes)
     """
+
+    IMAGE_CONFIG_MIME_TYPE_DOCKER = 'application/vnd.docker.container.image.v1+json'
+    IMAGE_LAYER_MIME_TYPE_DOCKER = 'application/vnd.docker.image.rootfs.diff.tar.gzip'
+    MANIFEST_MIME_TYPE_DOCKER = 'application/vnd.docker.distribution.manifest.v2+json'
+    MULTI_ARCH_MANIFEST_MIME_TYPE_DOCKER = 'application/vnd.docker.distribution.manifest.list.v2+json'
+    IMAGE_CONFIG_MIME_TYPE_OCI ='application/vnd.oci.image.config.v1+json'
+    IMAGE_LAYER_MIME_TYPE_OCI = 'application/vnd.oci.image.layer.v1.tar+gzip'
+    MANIFEST_MIME_TYPE_OCI = 'application/vnd.oci.image.manifest.v1+json'
+    MULTI_ARCH_MANIFEST_MIME_TYPE_OCI = 'application/vnd.oci.image.index.v1+json'
+
 
     class Style(Enum):
         DOCKER_STYLE = auto(),
@@ -45,6 +56,7 @@ class OciImageCreator:
         self.config_ref = None
         self.layer_digests = []
         self.blob_refs = []
+        self.multi_arch_entries = []
         self.set_mime_types(style)
         util.prepare_or_clean_dir(self.out_dir)
 
@@ -55,18 +67,17 @@ class OciImageCreator:
     ):
         # see: https://github.com/opencontainers/image-spec/blob/main/media-types.md
         if style == self.Style.DOCKER_STYLE:
-            self.image_config_mime_type='application/vnd.docker.container.image.v1+json'
-            self.image_layer_mime_type = 'application/vnd.docker.image.rootfs.diff.tar.gzip'
-            self.manifest_mime_type = 'application/vnd.docker.distribution.manifest.v2+json'
-            self.multi_arch_manifest_mime_type = 'application/vnd.docker.distribution.manifest.list.v2+json'
+            self.image_config_mime_type = self.IMAGE_CONFIG_MIME_TYPE_DOCKER
+            self.image_layer_mime_type = self.IMAGE_LAYER_MIME_TYPE_DOCKER
+            self.manifest_mime_type = self.MANIFEST_MIME_TYPE_DOCKER
+            self.multi_arch_manifest_mime_type = self.MULTI_ARCH_MANIFEST_MIME_TYPE_DOCKER
         elif style == self.Style.OCI_STYLE:
-            self.image_config_mime_type='application/vnd.oci.image.config.v1+json'
-            self.image_layer_mime_type = 'application/vnd.oci.image.layer.v1.tar+gzip'
-            self.manifest_mime_type = 'application/vnd.oci.image.manifest.v1+json'
-            self.multi_arch_manifest_mime_type = 'application/vnd.oci.image.index.v1+json'
+            self.image_config_mime_type = self.IMAGE_CONFIG_MIME_TYPE_OCI
+            self.image_layer_mime_type = self.IMAGE_LAYER_MIME_TYPE_OCI
+            self.manifest_mime_type = self.MANIFEST_MIME_TYPE_OCI
+            self.multi_arch_manifest_mime_type = self.MULTI_ARCH_MANIFEST_MIME_TYPE_OCI
         else:
             raise ValueError(f'Unknown Oci Image style {style}')
-
 
     def _create_tar_and_digest_from_dir(self, dir: Path, tar_file: str | Path) -> tuple[str, int]:
         temp_file = Path(tar_file).with_suffix('.tar')
@@ -83,9 +94,9 @@ class OciImageCreator:
 
         temp_file.unlink()
 
-        return 'sha256:' + uncompressed_digest
+        return uncompressed_digest
 
-    def file_digest(self, temp_file):
+    def file_digest(self, temp_file) -> str:
         py_version = sys.version_info
         if py_version.major >= 3 and py_version.minor >= 11:
             with open(temp_file, 'rb') as f:
@@ -104,6 +115,11 @@ class OciImageCreator:
 
         return 'sha256:' + hex_digest
 
+    def bytes_digest(self, data: bytes) -> str:
+        sha256 = hashlib.sha256()
+        sha256.update(data)
+        hex_digest = sha256.hexdigest()
+        return 'sha256:' + hex_digest
 
     def _get_manifest_dict(self, architecture: str, os: str, entrypoint: str) -> dict[str, str]:
         now_as_iso_str = datetime.datetime.now().isoformat() + 'Z'
@@ -155,6 +171,36 @@ class OciImageCreator:
             size = man_size,
         )
 
+    def _upload_blob_from_string(
+        self,
+        data: str,
+        mimeType: str,
+    ) -> om.OciBlobRef:
+        return self._upload_blob_from_bytes(data.encode('utf-8'), mimeType)
+
+    def _upload_blob_from_bytes(
+        self,
+        data: bytes,
+        mimeType: str,
+    ) -> om.OciBlobRef:
+        size = len(data)
+        hex_digest = self.bytes_digest(data)
+
+        # upload to OCI registry
+        self.client.put_blob(
+            image_reference=self.image_ref,
+            digest=hex_digest,
+            mimetype=mimeType,
+            data=data,
+            octets_count=size,
+        )
+
+        return om.OciBlobRef(
+            mediaType = mimeType,
+            digest = hex_digest,
+            size = size,
+        )
+
 
     def create_and_upload_image_config(
         self,
@@ -204,7 +250,7 @@ class OciImageCreator:
 
     def create_and_upload_manifest(
         self,
-    ):
+    ) -> tuple[requests.Response, om.OciImageManifest]:
         manifest = om.OciImageManifest(
             config = self.config_ref,
             layers = self.blob_refs,
@@ -222,4 +268,42 @@ class OciImageCreator:
             manifest=manifest_str.encode('utf-8'),
         )
 
+        return response, manifest
+
+    def upload_architecture(self, platform: om.OciPlatform):
+        # safe current child manifest as blob:
+        _, manifest = self.create_and_upload_manifest()
+
+        manifest_bytes = json.dumps(manifest.as_dict()).encode('utf-8')
+        size = len(manifest_bytes)
+        hex_digest = self.bytes_digest(manifest_bytes)
+
+        self.create_and_upload_manifest()
+
+        # save next list entry for multi_arch:
+        entry = om.OciImageManifestListEntry(
+            digest=hex_digest,
+            mediaType=manifest.mediaType,
+            size=size,
+            platform=platform,
+        )
+        print(f'Uploaded multi-arch child manifest: {platform.architecture}: {hex_digest}')
+        self.multi_arch_entries.append(entry)
+        self.config_ref = None
+        self.layer_digests = []
+        self.blob_refs = []
+
+        util.prepare_or_clean_dir(self.out_dir)
+
+    def create_and_upload_multiarch_manifest(self):
+        manifest = om.OciImageManifestList(
+            manifests=self.multi_arch_entries,
+            mediaType=self.multi_arch_manifest_mime_type
+        )
+        manifest_list_as_json = json.dumps(manifest.as_dict())
+        response = self.client.put_manifest(
+            image_reference=self.image_ref,
+            manifest=manifest_list_as_json.encode('utf-8'),
+        )
         return response
+
