@@ -60,9 +60,6 @@ jobs:
           registry:2.8.1
     - name: Install Crane
       uses: imjasonh/setup-crane@v0.1
-    - name: Auth Crane
-      run: |
-        echo "${{ env.PASSWD }}" | crane auth login ${{ env.FDQN_NAME }} --username ${{ env.USER_NAME }} --password-stdin
     - name: Build go Test Binaries
       run: |
         env GOOS=linux GOARCH=arm64 GO111MODULE=on go build -o local/hello.arm64 -ldflags '-extldflags "-static"' main.go
@@ -90,6 +87,8 @@ jobs:
         if [ -e ${HOME}/.ocmconfig ]; then
           rm ${HOME}/.ocmconfig
         fi
+        # Authorize crane to use registry
+        echo "${{ env.PASSWD }}" | crane auth login ${{ env.FDQN_NAME }} --username ${{ env.USER_NAME }} --password-stdin
         pytest ./tests
     - name: stop docker registry
       if: always()
