@@ -26,12 +26,7 @@ jobs:
         echo "home-dir: $HOME"
         echo "fqdn hostame is: $FDQN_NAME"
         if [ "$FDQN_NAME" = "$HNAME" ]; then
-          echo "Failed to get fully qualified hostname: $FQDN_NAME, using python"
-          FDQN_NAME=`python -c "import socket; print(socket.getfqdn())"`
-          exit 1
-        fi
-        if [ "$FDQN_NAME" = "$HNAME" ]; then
-          echo "Failed to get fully qualified hostname: $FQDN_NAME"
+          echo "Failed to get fully qualified hostname: $FQDN_NAME , falling back to hostname"
           FDQN_NAME=`hostname`.
         fi
         sudo rm -rf certs
