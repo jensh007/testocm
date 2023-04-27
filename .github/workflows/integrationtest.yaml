@@ -87,8 +87,6 @@ jobs:
         if [ -e ${HOME}/.ocmconfig ]; then
           rm ${HOME}/.ocmconfig
         fi
-        # Authorize crane to use registry
-        echo "${{ env.PASSWD }}" | crane auth login ${{ env.FDQN_NAME }} --username ${{ env.USER_NAME }} --password-stdin
         pytest ./tests
     - name: stop docker registry
       if: always()
