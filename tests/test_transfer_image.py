@@ -1,8 +1,6 @@
-import os
 from pathlib import Path
-import time
 import pytest
-from ocm_fixture import ocm_config
+import subprocess
 
 import ocmcli as ocm
 import oci.auth as oa
@@ -10,12 +8,19 @@ import oci.model as om
 import oci.client as oc
 import gci.componentmodel as cm
 
-from ocm_fixture import ctx, OcmTestContext
+from ocm_fixture import ctx, ocm_config, OcmTestContext
 import upload_image
 from oci_image import OciImageCreator
 
 
 pytestmark = pytest.mark.usefixtures("ocm_config")
+
+
+def _validate_image(image_ref: str):
+    cmd = ['crane', 'validate', '--remote', f'{image_ref}']
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    assert result.returncode == 0
+    assert result.stdout.startswith('PASS: ')
 
 
 def do_image_transfer(client, image_ref, target_image_ref) -> om.OciImageManifest:
@@ -45,6 +50,7 @@ def test_image_transfer_docker_style(ctx: OcmTestContext):
     for layer in manifest.layers:
         assert layer.mediaType == OciImageCreator.IMAGE_LAYER_MIME_TYPE_DOCKER
         assert layer.size > 0
+    _validate_image(target_image_ref)
 
 
 def test_image_transfer_oci_style(ctx: OcmTestContext):
@@ -62,6 +68,8 @@ def test_image_transfer_oci_style(ctx: OcmTestContext):
     for layer in manifest.layers:
         assert layer.mediaType == OciImageCreator.IMAGE_LAYER_MIME_TYPE_OCI
         assert layer.size > 0
+    _validate_image(target_image_ref)
+
 
 def _check_architectures_in_manifest(manifest):
     assert len(manifest.manifests) == 2
@@ -81,6 +89,8 @@ def test_multi_arch_image_transfer_docker_style(ctx: OcmTestContext):
     assert manifest.schemaVersion == 2
     assert manifest.mediaType == OciImageCreator.MULTI_ARCH_MANIFEST_MIME_TYPE_DOCKER
     _check_architectures_in_manifest(manifest)
+    _validate_image(target_image_ref)
+
 
 def test_multi_arch_image_transfer_oci_style(ctx: OcmTestContext):
     image_name = 'hello-multi:0.1.0'
@@ -92,3 +102,4 @@ def test_multi_arch_image_transfer_oci_style(ctx: OcmTestContext):
     assert manifest.schemaVersion == 2
     assert manifest.mediaType == OciImageCreator.MULTI_ARCH_MANIFEST_MIME_TYPE_OCI
     _check_architectures_in_manifest(manifest)
+    _validate_image(target_image_ref)
