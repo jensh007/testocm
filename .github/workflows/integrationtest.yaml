@@ -63,6 +63,10 @@ jobs:
           -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/ociregistry.crt \
           -e REGISTRY_HTTP_TLS_KEY=/certs/ociregistry.key \
           registry:2.8.1
+    - name: Install Crane
+      run: |
+        bash -c "`curl -sL https://raw.githubusercontent.com/michaelsauter/crane/v3.6.0/download.sh`"
+        mv crane /usr/local/bin/crane
     - name: Build go Test Binaries
       run: |
         env GOOS=linux GOARCH=arm64 GO111MODULE=on go build -o local/hello.arm64 -ldflags '-extldflags "-static"' main.go
