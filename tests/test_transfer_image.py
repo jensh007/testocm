@@ -16,7 +16,7 @@ from oci_image import OciImageCreator
 pytestmark = pytest.mark.usefixtures("ocm_config")
 
 
-def _validate_image(image_ref: str):
+def _validate_image(image_ref: str, ctx: OcmTestContext):
     cmd_auth = ['crane', 'auth', 'login', ctx.repo_host, '-u', ctx.user_name, '-p', ctx.passwd]
     subprocess.run(cmd_auth)
     cmd = ['crane', 'validate', '--remote', f'{image_ref}']
@@ -52,7 +52,7 @@ def test_image_transfer_docker_style(ctx: OcmTestContext):
     for layer in manifest.layers:
         assert layer.mediaType == OciImageCreator.IMAGE_LAYER_MIME_TYPE_DOCKER
         assert layer.size > 0
-    _validate_image(target_image_ref)
+    _validate_image(target_image_ref, ctx)
 
 
 def test_image_transfer_oci_style(ctx: OcmTestContext):
@@ -70,7 +70,7 @@ def test_image_transfer_oci_style(ctx: OcmTestContext):
     for layer in manifest.layers:
         assert layer.mediaType == OciImageCreator.IMAGE_LAYER_MIME_TYPE_OCI
         assert layer.size > 0
-    _validate_image(target_image_ref)
+    _validate_image(target_image_ref, ctx)
 
 
 def _check_architectures_in_manifest(manifest):
@@ -91,7 +91,7 @@ def test_multi_arch_image_transfer_docker_style(ctx: OcmTestContext):
     assert manifest.schemaVersion == 2
     assert manifest.mediaType == OciImageCreator.MULTI_ARCH_MANIFEST_MIME_TYPE_DOCKER
     _check_architectures_in_manifest(manifest)
-    _validate_image(target_image_ref)
+    _validate_image(target_image_ref, ctx)
 
 
 def test_multi_arch_image_transfer_oci_style(ctx: OcmTestContext):
@@ -104,4 +104,4 @@ def test_multi_arch_image_transfer_oci_style(ctx: OcmTestContext):
     assert manifest.schemaVersion == 2
     assert manifest.mediaType == OciImageCreator.MULTI_ARCH_MANIFEST_MIME_TYPE_OCI
     _check_architectures_in_manifest(manifest)
-    _validate_image(target_image_ref)
+    _validate_image(target_image_ref, ctx)
