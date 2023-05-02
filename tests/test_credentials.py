@@ -5,15 +5,8 @@ import pytest
 
 import ocmcli as ocm
 from ocm_fixture import ctx, OcmTestContext
+import util
 
-def print_config():
-    from pathlib import Path
-    import os
-    config_path = Path(os.getenv('HOME')) / '.ocmconfig'
-    with open(config_path) as f:
-        cfg = f.read()
-    print(f'test_transfer_with_credentials: OCM configuration file read from: {config_path}')
-    print(cfg)
 
 def test_transfer_without_credentials(ctx: OcmTestContext):
     with pytest.raises(subprocess.CalledProcessError) as excinfo:
@@ -23,7 +16,7 @@ def test_transfer_without_credentials(ctx: OcmTestContext):
 
 def test_transfer_with_credentials(ctx: OcmTestContext):
     credential_options = f'--cred :type=OCIRegistry --cred :hostname={ctx.repo_host} --cred username={ctx.user_name} --cred password={ctx.passwd}'
-    print_config()
+    util.print_ocm_config()
     ocm.execute_ocm(f'{credential_options} transfer artifacts gcr.io/google-containers/pause:3.2 {ctx.repo_dir}/images/pause:3.2')
 
 
