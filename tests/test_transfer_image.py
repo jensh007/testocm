@@ -17,8 +17,8 @@ pytestmark = pytest.mark.usefixtures("ocm_config")
 
 
 def _validate_image(image_ref: str, ctx: OcmTestContext):
-    cmd_auth = ['crane', 'auth', 'login', ctx.repo_host, '-u', ctx.user_name, '-p', ctx.passwd]
-    subprocess.run(cmd_auth)
+    cmd_auth = ['crane', 'auth', 'login', ctx.repo_prefix, '-u', ctx.user_name, '-p', ctx.passwd]
+    subprocess.run(cmd_auth, check=True)
     cmd = ['crane', 'validate', '--remote', f'{image_ref}']
     result = subprocess.run(cmd, capture_output=True, text=True)
     assert result.returncode == 0

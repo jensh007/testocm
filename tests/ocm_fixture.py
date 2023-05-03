@@ -15,10 +15,12 @@ class OcmTestContext:
 @pytest.fixture(scope="session")
 def ctx():
     repo_prefix = os.getenv('FDQN_NAME')
-    repo_host = repo_prefix[0:repo_prefix.find(':')] if ':' in repo_prefix else repo_prefix
-    repo_dir = repo_prefix
     user_name = os.getenv('USER_NAME')
     passwd = os.getenv('PASSWD')
+    assert repo_prefix and user_name and passwd, \
+        'OCM Integration tests, reqiure FQDN_NAME, USER_NAME, PASSWD variables'
+    repo_host = repo_prefix[0:repo_prefix.find(':')] if ':' in repo_prefix else repo_prefix
+    repo_dir = repo_prefix
     return OcmTestContext(
         repo_prefix=repo_prefix,
         repo_host=repo_host,
@@ -62,15 +64,19 @@ configurations:
 
 @pytest.fixture(scope="module")
 def ocm_no_config(ctx):
+#     test_config = f'''\
+# type: generic.config.ocm.software/v1
+# configurations:
+#   - type: credentials.config.ocm.software
+#     consumers:
+#       - identity:
+#           type: OCIRegistry
+#           hostname: {ctx.repo_host}
+#         credentials: []
+# '''
     test_config = f'''\
 type: generic.config.ocm.software/v1
-configurations:
-  - type: credentials.config.ocm.software
-    consumers:
-      - identity:
-          type: OCIRegistry
-          hostname: {ctx.repo_host}
-        credentials: []
+configurations: []
 '''
     backup_file = Path(os.getenv('HOME')) / '.ocmconfig.bak'
     config_file = Path(os.getenv('HOME')) / '.ocmconfig'
