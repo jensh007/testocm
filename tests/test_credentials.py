@@ -4,10 +4,11 @@ import time
 import pytest
 
 import ocmcli as ocm
-from ocm_fixture import ctx, OcmTestContext
+from ocm_fixture import ctx, ocm_no_config, OcmTestContext
 import util
 
 
+pytestmark = pytest.mark.usefixtures("ocm_no_config")  # explicitely set no credentials to avoid auto fallback to docker confi
 def test_transfer_without_credentials(ctx: OcmTestContext):
     with pytest.raises(subprocess.CalledProcessError) as excinfo:
         ocm.execute_ocm(f'transfer artifacts gcr.io/google-containers/pause:3.2 {ctx.repo_dir}/images/pause:3.2', capture_output=True)

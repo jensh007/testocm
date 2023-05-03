@@ -2,10 +2,9 @@ import os
 from pathlib import Path
 import time
 import pytest
-from ocm_fixture import ocm_config
 
 import ocmcli as ocm
-from ocm_fixture import ctx, OcmTestContext
+from ocm_fixture import ctx, ocm_config, OcmTestContext
 import util
 
 

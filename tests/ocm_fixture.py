@@ -27,7 +27,8 @@ def ctx():
         passwd=passwd
     )
 
-@pytest.fixture()
+
+@pytest.fixture(scope="module")
 def ocm_config(ctx):
     test_config = f'''\
 type: generic.config.ocm.software/v1
@@ -42,6 +43,34 @@ configurations:
             properties:
               username: {ctx.user_name}
               password: {ctx.passwd}
+'''
+    backup_file = Path(os.getenv('HOME')) / '.ocmconfig.bak'
+    config_file = Path(os.getenv('HOME')) / '.ocmconfig'
+    # backup .ocmconfig if it exists
+    if backup_file.exists():
+        backup_file.unlink()
+    if config_file.exists():
+        config_file.rename(backup_file)
+    with config_file.open('w') as f:
+        f.write(test_config)
+    yield None
+    # restore original .ocmconfig if it existed after tests are run
+    config_file.unlink()
+    if backup_file.exists():
+        backup_file.rename(config_file)
+
+
+@pytest.fixture(scope="module")
+def ocm_no_config(ctx):
+    test_config = f'''\
+type: generic.config.ocm.software/v1
+configurations:
+  - type: credentials.config.ocm.software
+    consumers:
+      - identity:
+          type: OCIRegistry
+          hostname: {ctx.repo_host}
+        credentials: []
 '''
     backup_file = Path(os.getenv('HOME')) / '.ocmconfig.bak'
     config_file = Path(os.getenv('HOME')) / '.ocmconfig'
