@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+from dataclasses import dataclass
 import os
 from pathlib import Path
 import shutil
@@ -48,6 +49,16 @@ def _tag_compatible_arch(arch: str) -> str:
     return arch.replace('/', '-')
 
 
+@dataclass
+class ComponentVersionSpec:
+    name: str
+    version: str
+    provider: str
+    source_file: str | Path | None = None
+    resource_file: str | Path | None = None
+    reference_file: str | Path | None = None
+
+
 class OcmApplication:
     def __init__(
         self,
@@ -60,8 +71,9 @@ class OcmApplication:
         self.build_settings = build_settings
         self.gen_dir = Path(gen_dir) if gen_dir else self._generate_gen_dir()
         self.gen_ctf_dir = Path(self.gen_dir) / 'ctf'
+        self.gen_ca_dir= Path(self.gen_dir) / 'ca'
         self.ocm_repo = ocm_repo
-        print(f'Generating in {self.gen_ctf_dir}')
+        print(f'Generating in {self.gen_dir}')
 
     ARCHITECTURES: Final[str] = 'architectures'
     VERSION: Final[str] = 'version'
@@ -89,18 +101,47 @@ class OcmApplication:
     def download_helm_charts(self, settings_file: str):
         pass
 
+    def get_component_version_spec_template(self) -> ComponentVersionSpec:
+        return ComponentVersionSpec(self.name, self.get_version(), None)
+
+    def create_ctf_from_component_version(
+        self,
+        comp_vers: ComponentVersionSpec,
+    ):
+        if self.gen_ca_dir.exists():
+            shutil.rmtree(self.gen_ca_dir)
+        self.makedirs()
+        print(f'Generating transport archive in {self.gen_ca_dir}')
+        self.gen_ca_dir.mkdir()
+
+        cmd_line = f'create componentarchive -f {comp_vers.name} {comp_vers.version} --provider {comp_vers.provider} --file {self.gen_ca_dir}'
+        execute_ocm(cmd_line)
+        if comp_vers.source_file:
+            cmd_line = f'add sources {str(self.gen_ca_dir)} {comp_vers.source_file}'
+            execute_ocm(cmd_line)
+        if comp_vers.resource_file:
+            cmd_line = f'add resources {str(self.gen_ca_dir)} {comp_vers.resource_file}'
+            execute_ocm(cmd_line)
+        if comp_vers.reference_file:
+            cmd_line = f'add references {str(self.gen_ca_dir)} {comp_vers.reference_file}'
+            execute_ocm(cmd_line)
+
+        cmd_line = f'transfer componentarchive {str(self.gen_ca_dir)} {str(self.gen_ctf_dir)}'
+        execute_ocm(cmd_line)
+
     def create_ctf_from_spec(
         self,
         components_file_name: str = 'components.yaml',
         settings_files: str | list[str]='settings.yaml'
     ):
+        print(f'Generating transport archive in {self.gen_ctf_dir}')
         if not self.gen_ctf_dir:
             error_exit('This command requires setting a ctf directory')
         self.makedirs()
 
         self.download_helm_charts(settings_files)
 
-        cmd_line = ['ocm','add', 'componentversions', '--create', '--file', str(self.gen_ctf_dir)]
+        cmd_line = f'ocm add componentversions --create --file {str(self.gen_ctf_dir)}'
         if type(settings_files) is str:
             cmd_line.extend(['--settings', settings_files])
         else:
