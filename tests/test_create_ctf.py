@@ -12,6 +12,7 @@ import yaml
 
 import ocmcli as ocm
 from ocm_fixture import ctx, OcmTestContext
+from ocm_builder import OcmBuilder
 
 comp_vers = '1.0.0'
 provider = 'ocm.integrationtest'
@@ -105,11 +106,19 @@ def validate_ctf_dir(ctf_dir: Path):
         assert child.name.startswith('sha256.')
 
 
+def validate_ctf(cli: ocm.OcmApplication):
+    ctf_dir = cli.gen_ctf_dir
+    validate_ctf_dir(ctf_dir)
+
+    # retrieve component descriptor
+    cd = find_component_descriptor(ctf_dir)
+    assert cd
+    verify_component_descriptor(cd)
+
+
 def test_ctf_from_ca(ctx: OcmTestContext):
     # create an image with docker mime types and store it in oci registry
-    gen_dir = get_root_dir() / 'gen'
     testdata_dir = get_root_dir() / 'test-data'
-    test_dir = gen_dir / 'test_ctf_from_ca'
     sources_yaml = textwrap.dedent(f'''\
         name: source
         type: filesystem
@@ -138,29 +147,14 @@ def test_ctf_from_ca(ctx: OcmTestContext):
             imageReference: {image_reference}
         ''')
 
-    if test_dir.exists():
-        shutil.rmtree(test_dir)
-    test_dir.mkdir(parents=True)
-
-    source_file = test_dir / 'sources.yaml'
-    resource_file = test_dir / 'resources.yaml'
-    with open(source_file, 'w') as f:
-        f.write(sources_yaml)
-    with open(resource_file, 'w') as f:
-        f.write(resources_yaml)
-
-    cli = ocm.OcmApplication(
-        name=comp_name,
-        gen_dir=test_dir
+    ocm_builder = OcmBuilder('test_ctf_from_ca', get_root_dir())
+    cli = ocm_builder.create_ctf_from_resources_sources_references(
+        comp_name=comp_name,
+        comp_vers=comp_vers,
+        provider=provider,
+        resources_yaml=resources_yaml,
+        sources_yaml=sources_yaml,
     )
-
-    cv_spec = cli.get_component_version_spec_template()
-    cv_spec.version = comp_vers
-    cv_spec.provider = provider
-    cv_spec.source_file = source_file
-    cv_spec.resource_file = resource_file
-
-    cli.create_ctf_from_component_version(cv_spec)
 
     blob_dir = cli.gen_ca_dir / 'blobs'
     cd = cli.gen_ca_dir / 'component-descriptor.yaml'
@@ -172,20 +166,12 @@ def test_ctf_from_ca(ctx: OcmTestContext):
     assert count == 1
     assert cd.exists()
 
-    ctf_dir = cli.gen_ctf_dir
-    validate_ctf_dir(ctf_dir)
-
-    # retrieve component descriptor
-    cd = find_component_descriptor(ctf_dir)
-    assert cd
-    verify_component_descriptor(cd)
+    validate_ctf(cli)
 
 
 def test_ctf_from_component_yaml():
     # create an image with docker mime types and store it in oci registry
-    gen_dir = get_root_dir() / 'gen'
     testdata_dir = get_root_dir() / 'test-data'
-    test_dir = gen_dir / 'test_ctf_from_component'
     component_yaml = textwrap.dedent(f'''\
       components:
       - name: {comp_name}
@@ -217,23 +203,6 @@ def test_ctf_from_component_yaml():
             version: {comp_vers}
         ''')
 
-    if test_dir.exists():
-        shutil.rmtree(test_dir)
-    test_dir.mkdir(parents=True)
-
-    comp_file = test_dir / 'component.yaml'
-    with open(comp_file, 'w') as f:
-        f.write(component_yaml)
-
-    cli = ocm.OcmApplication(
-        name=comp_name,
-        gen_dir=test_dir
-    )
-    cli.create_ctf_from_spec(str(comp_file), None)
-    ctf_dir = cli.gen_ctf_dir
-    validate_ctf_dir(ctf_dir)
-
-    # retrieve component descriptor
-    cd = find_component_descriptor(ctf_dir)
-    assert cd
-    verify_component_descriptor(cd)
+    ocm_builder = OcmBuilder('test_ctf_from_component', get_root_dir())
+    cli = ocm_builder.create_ctf_from_component_spec(component_yaml)
+    validate_ctf(cli)
