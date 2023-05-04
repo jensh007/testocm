@@ -24,6 +24,9 @@ image_reference = 'gcr.io/google_containers/echoserver:1.10'
 repo_url = 'github.com/open-component-model/ocm'
 commit_id = 'e39625d6e919d33267da4778a1842670ce2bbf77'
 
+ref_comp_name = f'{provider}/helper'
+ref_comp_vers = '1.0.0'
+
 
 def get_root_dir() -> Path:
     path = Path(__file__)
@@ -116,6 +119,25 @@ def validate_ctf(cli: ocm.OcmApplication):
     verify_component_descriptor(cd)
 
 
+def create_helper_component():
+    testdata_dir = get_root_dir() / 'test-data'
+    component_yaml = textwrap.dedent(f'''\
+      components:
+      - name: {ref_comp_name}
+        version: {ref_comp_vers}
+        provider:
+            name: {provider}
+        resources:
+          - name: myfile
+            type: blob
+            input:
+              type: file
+              path: {str(testdata_dir)}/someresource.txt
+        ''')
+    ocm_builder = OcmBuilder('helper_component', get_root_dir())
+    ocm_builder.create_ctf_from_component_spec(component_yaml)
+
+
 def test_ctf_from_ca(ctx: OcmTestContext):
     # create an image with docker mime types and store it in oci registry
     testdata_dir = get_root_dir() / 'test-data'
@@ -206,3 +228,32 @@ def test_ctf_from_component_yaml():
     ocm_builder = OcmBuilder('test_ctf_from_component', get_root_dir())
     cli = ocm_builder.create_ctf_from_component_spec(component_yaml)
     validate_ctf(cli)
+
+
+def test_reference():
+    component_yaml = textwrap.dedent(f'''\
+      components:
+      - name: {comp_name}
+        version: {comp_vers}
+        provider:
+          name: {provider}
+        componentReferences:
+        - name: microblog
+          componentName: {ref_comp_name}
+          version: {ref_comp_vers}
+      ''')
+    create_helper_component()
+    ocm_builder = OcmBuilder('test_reference', get_root_dir())
+    cli = ocm_builder.create_ctf_from_component_spec(component_yaml)
+    ctf_dir = cli.gen_ctf_dir
+    validate_ctf_dir(ctf_dir)
+
+    # retrieve component descriptor
+    cd = find_component_descriptor(ctf_dir)
+    assert cd
+    assert cd.component.name == comp_name
+    assert cd.component.version  == comp_vers
+    assert len(cd.component.componentReferences) == 1
+    ref = cd.component.componentReferences[0]
+    assert ref.componentName == ref_comp_name
+    assert ref.version == ref_comp_vers
