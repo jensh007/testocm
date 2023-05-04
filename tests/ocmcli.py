@@ -98,9 +98,6 @@ class OcmApplication:
     def makedirs(self):
         os.makedirs(self.gen_dir, exist_ok=True)
 
-    def download_helm_charts(self, settings_file: str):
-        pass
-
     def get_component_version_spec_template(self) -> ComponentVersionSpec:
         return ComponentVersionSpec(self.name, self.get_version(), None)
 
@@ -138,18 +135,18 @@ class OcmApplication:
         if not self.gen_ctf_dir:
             error_exit('This command requires setting a ctf directory')
         self.makedirs()
+        self.gen_ctf_dir.mkdir()
 
-        self.download_helm_charts(settings_files)
-
-        cmd_line = f'ocm add componentversions --create --file {str(self.gen_ctf_dir)}'
-        if type(settings_files) is str:
-            cmd_line.extend(['--settings', settings_files])
-        else:
-            for s in settings_files:
-                cmd_line.extend(['--settings', s])
-        cmd_line.append(components_file_name)
-        print(f'Calling ocm: {" ".join(cmd_line)}')
-        subprocess.run(cmd_line, check=True)
+        cmd_line = f'add componentversions --create --file {str(self.gen_ctf_dir)}'
+        if settings_files:
+            if type(settings_files) is str:
+                cmd_line += f'--settings {settings_files}'
+            else:
+                for s in settings_files:
+                    cmd_line += f'--settings {settings_files}'
+        cmd_line += ' ' + components_file_name
+        print(f'Calling ocm: {cmd_line}')
+        execute_ocm(cmd_line)
 
     def clean(self):
         if self.gen_dir.exists():
