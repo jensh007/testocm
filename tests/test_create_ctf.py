@@ -17,6 +17,12 @@ comp_vers = '1.0.0'
 provider = 'ocm.integrationtest'
 image_name = 'echo'
 comp_name = f'{provider}/{image_name}'
+label_key = 'mylabel'
+label_value = 'Hello Label'
+image_reference = 'gcr.io/google_containers/echoserver:1.10'
+repo_url = 'github.com/open-component-model/ocm'
+commit_id = 'e39625d6e919d33267da4778a1842670ce2bbf77'
+
 
 def get_root_dir() -> Path:
     path = Path(__file__)
@@ -72,10 +78,10 @@ def verify_component_descriptor(cd: cm.ComponentDescriptor):
     assert image.version == '1.10'
     assert image.relation == cm.ResourceRelation.EXTERNAL
     assert type(image.access) == cm.OciAccess #  cm.AccessType.OCI_REGISTRY
-    assert image.access.imageReference == 'gcr.io/google_containers/echoserver:1.10'
+    assert image.access.imageReference == image_reference
     assert len(image.labels) == 1
-    assert image.labels[0].name == 'mylabel'
-    assert image.labels[0].value == 'Hello Label'
+    assert image.labels[0].name == label_key
+    assert image.labels[0].value == label_value
     assert len(cd.component.sources) == 1
     source = cd.component.sources[0]
     assert source.name == 'source'
@@ -83,8 +89,21 @@ def verify_component_descriptor(cd: cm.ComponentDescriptor):
     assert source.version == comp_vers
     assert source.access.type == cm.AccessType.GITHUB
     assert type(source.access) == cm.GithubAccess
-    assert source.access.commit == 'e39625d6e919d33267da4778a1842670ce2bbf77'
-    assert source.access.repoUrl == 'github.com/open-component-model/ocm'
+    assert source.access.commit == commit_id
+    assert source.access.repoUrl == repo_url
+
+
+def validate_ctf_dir(ctf_dir: Path):
+    blob_dir = ctf_dir / 'blobs'
+    index_file = ctf_dir / 'artifact-index.json'
+    assert blob_dir.exists()
+    assert index_file.exists()
+
+    count = 0
+    for child in blob_dir.iterdir():
+        count += 1
+        assert child.name.startswith('sha256.')
+
 
 def test_ctf_from_ca(ctx: OcmTestContext):
     # create an image with docker mime types and store it in oci registry
@@ -96,8 +115,8 @@ def test_ctf_from_ca(ctx: OcmTestContext):
         type: filesystem
         access:
             type: github
-            repoUrl: github.com/open-component-model/ocm
-            commit: e39625d6e919d33267da4778a1842670ce2bbf77
+            repoUrl: {repo_url}
+            commit: {commit_id}
         version: {comp_vers}
         ''')
     resources_yaml = textwrap.dedent(f'''\
@@ -112,11 +131,11 @@ def test_ctf_from_ca(ctx: OcmTestContext):
         type: ociImage
         version: "1.10"
         labels:
-          - name: mylabel
-            value: Hello Label
+          - name: {label_key}
+            value: {label_value}
         access:
             type: ociArtifact
-            imageReference: gcr.io/google_containers/echoserver:1.10
+            imageReference: {image_reference}
         ''')
 
     if test_dir.exists():
@@ -143,8 +162,8 @@ def test_ctf_from_ca(ctx: OcmTestContext):
 
     cli.create_ctf_from_component_version(cv_spec)
 
-    blob_dir = test_dir / 'ca' / 'blobs'
-    cd = test_dir / 'ca' / 'component-descriptor.yaml'
+    blob_dir = cli.gen_ca_dir / 'blobs'
+    cd = cli.gen_ca_dir / 'component-descriptor.yaml'
     assert blob_dir.exists()
     count = 0
     for child in blob_dir.iterdir():
@@ -153,16 +172,66 @@ def test_ctf_from_ca(ctx: OcmTestContext):
     assert count == 1
     assert cd.exists()
 
-    ctf_dir = test_dir / 'ctf'
-    blob_dir = ctf_dir / 'blobs'
-    index_file = ctf_dir / 'artifact-index.json'
-    assert blob_dir.exists()
-    assert index_file.exists()
+    ctf_dir = cli.gen_ctf_dir
+    validate_ctf_dir(ctf_dir)
 
-    count = 0
-    for child in blob_dir.iterdir():
-        count += 1
-        assert child.name.startswith('sha256.')
+    # retrieve component descriptor
+    cd = find_component_descriptor(ctf_dir)
+    assert cd
+    verify_component_descriptor(cd)
+
+
+def test_ctf_from_component_yaml():
+    # create an image with docker mime types and store it in oci registry
+    gen_dir = get_root_dir() / 'gen'
+    testdata_dir = get_root_dir() / 'test-data'
+    test_dir = gen_dir / 'test_ctf_from_component'
+    component_yaml = textwrap.dedent(f'''\
+      components:
+      - name: {comp_name}
+        version: {comp_vers}
+        provider:
+            name: {provider}
+        resources:
+          - name: chart
+            type: helmChart
+            input:
+                type: helm
+                path: {str(testdata_dir)}/echoserver-helmchart
+          - name: image
+            type: ociImage
+            version: "1.10"
+            labels:
+            - name: {label_key}
+              value: {label_value}
+            access:
+                type: ociArtifact
+                imageReference: {image_reference}
+        sources:
+          - name: source
+            type: filesystem
+            access:
+                type: github
+                repoUrl: {repo_url}
+                commit: {commit_id}
+            version: {comp_vers}
+        ''')
+
+    if test_dir.exists():
+        shutil.rmtree(test_dir)
+    test_dir.mkdir(parents=True)
+
+    comp_file = test_dir / 'component.yaml'
+    with open(comp_file, 'w') as f:
+        f.write(component_yaml)
+
+    cli = ocm.OcmApplication(
+        name=comp_name,
+        gen_dir=test_dir
+    )
+    cli.create_ctf_from_spec(str(comp_file), None)
+    ctf_dir = cli.gen_ctf_dir
+    validate_ctf_dir(ctf_dir)
 
     # retrieve component descriptor
     cd = find_component_descriptor(ctf_dir)
