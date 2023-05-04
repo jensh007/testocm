@@ -1,9 +1,7 @@
 from pathlib import Path
 import json
-import pprint
-import shutil
+import logging
 import textwrap
-import pytest
 import tarfile
 
 import gci.componentmodel as cm
@@ -11,8 +9,11 @@ import oci.model as om
 import yaml
 
 import ocmcli as ocm
+from cd_tools import OciFetcher
 from ocm_fixture import ctx, OcmTestContext
 from ocm_builder import OcmBuilder
+
+logger = logging.getLogger(__name__)
 
 comp_vers = '1.0.0'
 provider = 'ocm.integrationtest'
@@ -58,25 +59,34 @@ def find_component_descriptor(ctf_dir: Path) -> cm.ComponentDescriptor:
     return cd
 
 
-def verify_component_descriptor(cd: cm.ComponentDescriptor):
+def verify_root_elems(cd: cm.ComponentDescriptor):
     assert cd.meta.schemaVersion == cm.SchemaVersion.V2
     assert cd.component.name == comp_name
     assert cd.component.version  == comp_vers
     assert len(cd.component.resources) == 2
     assert len(cd.component.sources) == 1
-    chart = cd.component.resources[0]
+
+def verify_chart(chart: cm.Resource):
     assert chart.name == 'chart'
     assert chart.type == cm.ArtefactType.HELM_CHART
     assert chart.relation == cm.ResourceRelation.LOCAL
     assert chart.version == '1.0.0'
     assert chart.access.type == cm.AccessType.LOCAL_BLOB
-    print(f'{type(chart.access)=}')
-    # does not work at this time:
-    # assert type(chart.access) == cm.LocalBlobAccess
-    # assert chart.access.localReference.startswith('sha256:')
-    # assert chart.access.mediaType == 'application/vnd.oci.image.manifest.v1+tar+gzip'
-    # assert chart.access.referenceName == f'{provider}/echo/echoserver:0.1.0'
-    image = cd.component.resources[1]
+    assert type(chart.access) == cm.LocalBlobAccess
+    assert chart.access.localReference.startswith('sha256:')
+    assert chart.access.mediaType == 'application/vnd.oci.image.manifest.v1+tar+gzip'
+    assert chart.access.referenceName == f'{provider}/echo/echoserver:0.1.0'
+
+def verify_chart_remote(chart: cm.Resource, image_reference: str):
+    assert chart.name == 'chart'
+    assert chart.type == cm.ArtefactType.HELM_CHART
+    assert chart.relation == cm.ResourceRelation.LOCAL
+    assert chart.version == '1.0.0'
+    assert chart.access.type == cm.AccessType.OCI_REGISTRY
+    assert type(chart.access) == cm.OciAccess
+    assert chart.access.imageReference == image_reference
+
+def verify_image(image: cm.Resource):
     assert image.name == 'image'
     assert image.type == cm.ArtefactType.OCI_IMAGE
     assert image.version == '1.10'
@@ -86,8 +96,20 @@ def verify_component_descriptor(cd: cm.ComponentDescriptor):
     assert len(image.labels) == 1
     assert image.labels[0].name == label_key
     assert image.labels[0].value == label_value
-    assert len(cd.component.sources) == 1
-    source = cd.component.sources[0]
+
+def verify_image_remote(image: cm.Resource, image_reference: str):
+    assert image.name == 'image'
+    assert image.type == cm.ArtefactType.OCI_IMAGE
+    assert image.version == '1.10'
+    assert image.relation == cm.ResourceRelation.EXTERNAL
+    assert type(image.access) == cm.OciAccess
+    assert image.access.type == cm.AccessType.OCI_REGISTRY
+    assert image.access.imageReference == image_reference
+    assert len(image.labels) == 1
+    assert image.labels[0].name == label_key
+    assert image.labels[0].value == label_value
+
+def verify_source(source: cm.ComponentSource):
     assert source.name == 'source'
     assert source.type == 'filesystem'
     assert source.version == comp_vers
@@ -95,6 +117,17 @@ def verify_component_descriptor(cd: cm.ComponentDescriptor):
     assert type(source.access) == cm.GithubAccess
     assert source.access.commit == commit_id
     assert source.access.repoUrl == repo_url
+
+
+def verify_component_descriptor(cd: cm.ComponentDescriptor):
+    verify_root_elems(cd)
+    chart = cd.component.resources[0]
+    verify_chart(chart)
+    image = cd.component.resources[1]
+    verify_image(image)
+    assert len(cd.component.sources) == 1
+    source = cd.component.sources[0]
+    verify_source(source)
 
 
 def validate_ctf_dir(ctf_dir: Path):
@@ -191,8 +224,7 @@ def test_ctf_from_ca(ctx: OcmTestContext):
     validate_ctf(cli)
 
 
-def test_ctf_from_component_yaml():
-    # create an image with docker mime types and store it in oci registry
+def create_test_ctf() -> ocm.OcmApplication:
     testdata_dir = get_root_dir() / 'test-data'
     component_yaml = textwrap.dedent(f'''\
       components:
@@ -226,7 +258,11 @@ def test_ctf_from_component_yaml():
         ''')
 
     ocm_builder = OcmBuilder('test_ctf_from_component', get_root_dir())
-    cli = ocm_builder.create_ctf_from_component_spec(component_yaml)
+    return ocm_builder.create_ctf_from_component_spec(component_yaml)
+
+def test_ctf_from_component_yaml():
+    # create an image with docker mime types and store it in oci registry
+    cli = create_test_ctf()
     validate_ctf(cli)
 
 
@@ -257,3 +293,157 @@ def test_reference():
     ref = cd.component.componentReferences[0]
     assert ref.componentName == ref_comp_name
     assert ref.version == ref_comp_vers
+
+
+def get_push_cli(repo_url):
+    cli = create_test_ctf()
+    cli.ocm_repo = repo_url
+    return cli
+
+
+def get_oci_client(ctx: OcmTestContext, repo_url: str):
+    return OciFetcher(
+        repo_url=repo_url,
+        user_name=ctx.user_name,
+        password=ctx.passwd,
+    )
+
+def get_remote_cd(oci: OciFetcher):
+    cd = oci.get_component_descriptor_from_registry(comp_name, comp_vers)
+    if logger.level <= logging.DEBUG:
+        cd_yaml = oci.get_component_descriptor_from_registry(comp_name, comp_vers, as_yaml=True)
+        logger.debug(cd_yaml)
+    return cd
+
+
+def get_repo_url(ctx: OcmTestContext):
+    return f'{ctx.repo_prefix}/inttest'
+
+# plain:
+# component:
+#   componentReferences: []
+#   name: ocm.integrationtest/echo
+#   provider: ocm.integrationtest
+#   repositoryContexts:
+#   - baseUrl: TDT7W57RPY.fritz.box:4430
+#     componentNameMapping: urlPath
+#     subPath: inttest
+#     type: OCIRegistry
+#   resources:
+#   - access:
+#       imageReference: TDT7W57RPY.fritz.box:4430/inttest/ocm.integrationtest/echo/echoserver:0.1.0
+#       type: ociArtifact
+#     name: chart
+#     relation: local
+#     type: helmChart
+#     version: 1.0.0
+#   - access:
+#       imageReference: gcr.io/google_containers/echoserver:1.10
+#       type: ociArtifact
+#     labels:
+#     - name: mylabel
+#       value: Hello Label
+#     name: image
+#     relation: external
+#     type: ociImage
+#     version: "1.10"
+#   sources:
+#   - access:
+#       commit: e39625d6e919d33267da4778a1842670ce2bbf77
+#       repoUrl: github.com/open-component-model/ocm
+#       type: github
+#     name: source
+#     type: filesystem
+#     version: 1.0.0
+#   version: 1.0.0
+# meta:
+#   schemaVersion: v2
+
+def test_push_plain(ctx: OcmTestContext):
+    repo_url = get_repo_url(ctx)
+    cli = get_push_cli(repo_url)
+    cli.push(force=True)
+
+    # get uploaded component descriptor
+    oci = get_oci_client(ctx, repo_url)
+    cd = get_remote_cd(oci)
+
+    chart_reference=f'{repo_url}/{provider}/echo/echoserver:0.1.0'
+    verify_root_elems(cd)
+    chart = cd.component.resources[0]
+    verify_chart_remote(chart, image_reference=chart_reference)
+    image = cd.component.resources[1]
+    verify_image(image)
+    assert len(cd.component.sources) == 1
+    source = cd.component.sources[0]
+    verify_source(source)
+
+    # check that contained artifacts are uploaded:
+    assert oci.exists(chart_reference)
+
+
+
+# by value:
+# component:
+#   componentReferences: []
+#   name: ocm.integrationtest/echo
+#   provider: ocm.integrationtest
+#   repositoryContexts:
+#   - baseUrl: TDT7W57RPY.fritz.box:4430
+#     componentNameMapping: urlPath
+#     subPath: inttest
+#     type: OCIRegistry
+#   resources:
+#   - access:
+#       imageReference: TDT7W57RPY.fritz.box:4430/inttest/ocm.integrationtest/echo/echoserver:0.1.0
+#       type: ociArtifact
+#     name: chart
+#     relation: local
+#     type: helmChart
+#     version: 1.0.0
+#   - access:
+#       imageReference: TDT7W57RPY.fritz.box:4430/inttest/google_containers/echoserver:1.10
+#       type: ociArtifact
+#     labels:
+#     - name: mylabel
+#       value: Hello Label
+#     name: image
+#     relation: external
+#     type: ociImage
+#     version: "1.10"
+#   sources:
+#   - access:
+#       commit: e39625d6e919d33267da4778a1842670ce2bbf77
+#       repoUrl: github.com/open-component-model/ocm
+#       type: github
+#     name: source
+#     type: filesystem
+#     version: 1.0.0
+#   version: 1.0.0
+# meta:
+#   schemaVersion: v2
+
+def test_push_by_value(ctx: OcmTestContext):
+    repo_url = get_repo_url(ctx)
+    cli = get_push_cli(repo_url)
+    cli.push(force=True, by_value=True, )
+
+    # check that contained artifacts are uploaded:
+    oci = get_oci_client(ctx, repo_url)
+    cd = get_remote_cd(oci)
+
+    chart_reference=f'{repo_url}/{provider}/echo/echoserver:0.1.0'
+    image_reference=f'{repo_url}/google_containers/echoserver:1.10'
+
+    verify_root_elems(cd)
+    chart = cd.component.resources[0]
+    verify_chart_remote(chart, image_reference=chart_reference)
+    image = cd.component.resources[1]
+    verify_image_remote(image,image_reference=image_reference)
+    assert len(cd.component.sources) == 1
+    source = cd.component.sources[0]
+    verify_source(source)
+
+    # check that contained artifacts are uploaded:
+    assert oci.exists(chart_reference)
+    assert oci.exists(image_reference)
