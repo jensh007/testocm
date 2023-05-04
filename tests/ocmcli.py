@@ -7,9 +7,8 @@ import subprocess
 import sys
 from typing import Final
 
-def error_exit(error_msg: str):
-    print(f'Error: {error_msg}')
-    sys.exit(1)
+class OcmCliException(Exception):
+    pass
 
 
 def get_root_dir() -> Path:
@@ -33,7 +32,7 @@ def get_version():
         if not line.lstrip().startswith('#'):
             line = line.strip()
             return line
-    error_exit(f'no version number found in: {version_file}')
+    raise OcmCliException(f'no version number found in: {version_file}')
 
 
 def get_latest_git_commit():
@@ -133,7 +132,7 @@ class OcmApplication:
     ):
         print(f'Generating transport archive in {self.gen_ctf_dir}')
         if not self.gen_ctf_dir:
-            error_exit('This command requires setting a ctf directory')
+            raise OcmCliException('This command requires setting a ctf directory')
         self.makedirs()
         self.gen_ctf_dir.mkdir()
 
@@ -174,14 +173,28 @@ class OcmApplication:
             print(f'Building: {" ".join(cmd_line)}')
             subprocess.run(cmd_line, check=True)
 
-    def push(self, force: bool):
-        if self.gen_ctf_dir.exists():
-            if force:
-                execute_ocm(f'-X keeplocalblob=true transfer ctf -f {str(self.gen_ctf_dir)} {self.ocm_repo}')
-            else:
-                execute_ocm(f'-X keeplocalblob=true transfer ctf {str(self.gen_ctf_dir)} {self.ocm_repo}')
-        else:
-            error_exit('No transport archive found, must be build first')
+    def push(
+            self,
+            force: bool=False,
+            by_value: bool=False,
+            recursive: bool=False,
+            keep_local_blobs: bool=False
+    ):
+        if not self.gen_ctf_dir.exists():
+            raise OcmCliException('No transport archive found, must be build first')
+
+        cmd_line = 'transfer ctf '
+        if keep_local_blobs:
+            cmd_line = '-X keeplocalblob=true ' + cmd_line
+        if force:
+            cmd_line += '-f '
+        if by_value:
+            cmd_line += '--copy-resources '
+        if recursive:
+            cmd_line += '--recursive '
+        cmd_line += f'{str(self.gen_ctf_dir)} {self.ocm_repo}'
+
+        execute_ocm(cmd_line)
 
     def pack(self, force: bool):
         target_dir = self.gen_dir / 'ctf-full'
@@ -199,4 +212,4 @@ class OcmApplication:
             self.gen_ctf_dir = target_dir.rename(self.gen_ctf_dir)
             shutil.rmtree(old_dir)
         else:
-            error_exit('No transport archive found, must be build first')
+            raise OcmCliException('No transport archive found, must be build first')
