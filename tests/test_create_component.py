@@ -6,14 +6,16 @@ import tarfile
 
 import gci.componentmodel as cm
 import oci.model as om
+import pytest
 import yaml
 
 import ocmcli as ocm
 from cd_tools import OciFetcher
-from ocm_fixture import ctx, OcmTestContext
+from ocm_fixture import ctx, ocm_config, OcmTestContext
 from ocm_builder import OcmBuilder
 
 logger = logging.getLogger(__name__)
+pytestmark = pytest.mark.usefixtures("ocm_config")
 
 comp_vers = '1.0.0'
 provider = 'ocm.integrationtest'
