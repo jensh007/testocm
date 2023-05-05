@@ -21,7 +21,14 @@ def execute_ocm(args: str, **kwargs):
     # to preserve quoted strings: re.findall(r'(\w+|".*?")', args)
     cmd.extend(args.split(' '))
     print(f'Running: {cmd}')
-    subprocess.run(cmd, check=True, **kwargs)
+    try:
+        res = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
+        print(res.stdout.decode())
+    except subprocess.CalledProcessError as ex:
+        # enrich the exception with output from ocm command to get better exception especially if
+        # run from pytest
+        ex.args = f'ocm output: "{res.stdout.decode()}", {ex.args}'
+        raise ex.with_traceback(ex.__traceback__)
 
 
 def get_version():
