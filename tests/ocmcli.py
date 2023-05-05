@@ -16,7 +16,7 @@ def get_root_dir() -> Path:
     return path.parent.absolute()
 
 
-def execute_ocm(args: str, **kwargs):
+def execute_ocm(args: str, **kwargs) -> subprocess.CompletedProcess:
     cmd = ['ocm']
     # to preserve quoted strings: re.findall(r'(\w+|".*?")', args)
     cmd.extend(args.split(' '))
@@ -24,6 +24,7 @@ def execute_ocm(args: str, **kwargs):
     try:
         res = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
         print(res.stdout.decode())
+        return res
     except subprocess.CalledProcessError as ex:
         # enrich the exception with output from ocm command to get better exception especially if
         # run from pytest

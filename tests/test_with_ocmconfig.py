@@ -12,4 +12,4 @@ pytestmark = pytest.mark.usefixtures("ocm_config")
 
 def test_config(ctx: OcmTestContext):
     util.print_ocm_config()
-    ocm.execute_ocm(f'transfer artifacts gcr.io/google-containers/pause:3.2 {ctx.repo_dir}/images/pause:3.2', capture_output=True)
+    ocm.execute_ocm(f'transfer artifacts gcr.io/google-containers/pause:3.2 {ctx.repo_dir}/images/pause:3.2')

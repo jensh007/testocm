@@ -26,7 +26,7 @@ def _validate_image(image_ref: str, ctx: OcmTestContext):
 
 
 def do_image_transfer(client, image_ref, target_image_ref) -> om.OciImageManifest:
-    ocm.execute_ocm(f'transfer artifacts {image_ref} {target_image_ref}', capture_output=True)
+    ocm.execute_ocm(f'transfer artifacts {image_ref} {target_image_ref}')
     # retrieve image and analyse it
     blob_ref = client.head_manifest(image_ref, accept=om.MimeTypes.prefer_multiarch)
     manifest: om.OciImageManifest = client.manifest(
