@@ -15,21 +15,17 @@ def get_root_dir() -> Path:
     path = Path(__file__)
     return path.parent.absolute()
 
-
 def execute_ocm(args: str, **kwargs) -> subprocess.CompletedProcess:
     cmd = ['ocm']
     # to preserve quoted strings: re.findall(r'(\w+|".*?")', args)
     cmd.extend(args.split(' '))
     print(f'Running: {cmd}')
-    try:
-        res = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
-        print(res.stdout.decode())
-        return res
-    except subprocess.CalledProcessError as ex:
-        # enrich the exception with output from ocm command to get better exception especially if
-        # run from pytest
-        ex.args = f'ocm output: "{res.stdout.decode()}", {ex.args}'
-        raise ex.with_traceback(ex.__traceback__)
+    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
+    print(res.stdout.decode())
+    if res.returncode != 0:
+        raise OcmCliException(f'ocm command failed with return-code {res.returncode}, '
+                              f'output: "{res.stdout.decode()}"')
+    return res
 
 
 def get_version():
