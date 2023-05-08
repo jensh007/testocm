@@ -13,6 +13,7 @@ import ocmcli as ocm
 from cd_tools import OciFetcher
 from ocm_fixture import ctx, ocm_config, OcmTestContext
 from ocm_builder import OcmBuilder
+import util
 
 logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.usefixtures("ocm_config")
@@ -154,25 +155,6 @@ def validate_ctf(cli: ocm.OcmApplication):
     verify_component_descriptor(cd)
 
 
-def create_helper_component():
-    testdata_dir = get_root_dir() / 'test-data'
-    component_yaml = textwrap.dedent(f'''\
-      components:
-      - name: {ref_comp_name}
-        version: {ref_comp_vers}
-        provider:
-            name: {provider}
-        resources:
-          - name: myfile
-            type: blob
-            input:
-              type: file
-              path: {str(testdata_dir)}/someresource.txt
-        ''')
-    ocm_builder = OcmBuilder('helper_component', get_root_dir())
-    ocm_builder.create_ctf_from_component_spec(component_yaml)
-
-
 def test_ctf_from_ca(ctx: OcmTestContext):
     # create an image with docker mime types and store it in oci registry
     testdata_dir = get_root_dir() / 'test-data'
@@ -280,7 +262,6 @@ def test_reference():
           componentName: {ref_comp_name}
           version: {ref_comp_vers}
       ''')
-    create_helper_component()
     ocm_builder = OcmBuilder('test_reference', get_root_dir())
     cli = ocm_builder.create_ctf_from_component_spec(component_yaml)
     ctf_dir = cli.gen_ctf_dir
@@ -302,13 +283,6 @@ def get_push_cli(repo_url):
     cli.ocm_repo = repo_url
     return cli
 
-
-def get_oci_client(ctx: OcmTestContext, repo_url: str):
-    return OciFetcher(
-        repo_url=repo_url,
-        user_name=ctx.user_name,
-        password=ctx.passwd,
-    )
 
 def get_remote_cd(oci: OciFetcher):
     cd = oci.get_component_descriptor_from_registry(comp_name, comp_vers)
@@ -367,7 +341,7 @@ def test_push_plain(ctx: OcmTestContext):
     cli.push(force=True)
 
     # get uploaded component descriptor
-    oci = get_oci_client(ctx, repo_url)
+    oci = util.get_oci_client(ctx, repo_url)
     cd = get_remote_cd(oci)
 
     chart_reference=f'{repo_url}/{provider}/echo/echoserver:0.1.0'
@@ -431,7 +405,7 @@ def test_push_by_value(ctx: OcmTestContext):
     cli.push(force=True, by_value=True, )
 
     # check that contained artifacts are uploaded:
-    oci = get_oci_client(ctx, repo_url)
+    oci = util.get_oci_client(ctx, repo_url)
     cd = get_remote_cd(oci)
 
     chart_reference=f'{repo_url}/{provider}/echo/echoserver:0.1.0'

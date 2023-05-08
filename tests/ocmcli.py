@@ -200,6 +200,32 @@ class OcmApplication:
 
         execute_ocm(cmd_line)
 
+
+    def transport(
+            self,
+            source_comp: str,
+            target_repo: str,
+            force: bool=False,
+            by_value: bool=False,
+            recursive: bool=False,
+            keep_local_blobs: bool=False
+    ):
+        if not self.gen_ctf_dir.exists():
+            raise OcmCliException('No transport archive found, must be build first')
+
+        cmd_line = 'transfer componentversion '
+        if keep_local_blobs:
+            cmd_line = '-X keeplocalblob=true ' + cmd_line
+        if force:
+            cmd_line += '-f '
+        if by_value:
+            cmd_line += '--copy-resources '
+        if recursive:
+            cmd_line += '--recursive '
+        cmd_line += f'{source_comp} {target_repo}'
+
+        execute_ocm(cmd_line)
+
     def pack(self, force: bool):
         target_dir = self.gen_dir / 'ctf-full'
         if self.gen_ctf_dir.exists():

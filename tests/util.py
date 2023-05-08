@@ -2,6 +2,9 @@ import os
 import shutil
 from pathlib import Path
 
+from cd_tools import OciFetcher
+from ocm_fixture import OcmTestContext
+
 def prepare_or_clean_dir(dir: Path | str):
     dir = Path(dir)
     if dir.exists():
@@ -20,3 +23,12 @@ def print_ocm_config():
         print(cfg)
     else:
         print(f'OCM configuration file: {config_path} does not exist.')
+
+
+def get_oci_client(ctx: OcmTestContext, repo_url: str):
+    return OciFetcher(
+        repo_url=repo_url,
+        user_name=ctx.user_name,
+        password=ctx.passwd,
+    )
+
