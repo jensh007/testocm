@@ -6,14 +6,13 @@ import shutil
 import subprocess
 import sys
 from typing import Final
+import yaml
+
+import util
 
 class OcmCliException(Exception):
     pass
 
-
-def get_root_dir() -> Path:
-    path = Path(__file__)
-    return path.parent.absolute()
 
 def execute_ocm(args: str, **kwargs) -> subprocess.CompletedProcess:
     cmd = ['ocm']
@@ -29,7 +28,7 @@ def execute_ocm(args: str, **kwargs) -> subprocess.CompletedProcess:
 
 
 def get_version():
-    version_file = get_root_dir() / 'VERSION'
+    version_file = util.get_root_dir() / 'VERSION'
     with open(version_file) as f:
         content = f.readlines()
     for line in content:
@@ -65,7 +64,8 @@ class ComponentVersionSpec:
 class OcmApplication:
     def __init__(
         self,
-        name: str,
+        name: str = None,
+        version: str = None,
         build_settings: dict[str, any]={},
         gen_dir: str = None,
         ocm_repo: str = None,
@@ -76,6 +76,10 @@ class OcmApplication:
         self.gen_ctf_dir = Path(self.gen_dir) / 'ctf'
         self.gen_ca_dir= Path(self.gen_dir) / 'ca'
         self.ocm_repo = ocm_repo
+        if version:
+            self.version = version
+        else:
+            self.version = self.get_setting(self.VERSION)
         print(f'Generating in {self.gen_dir}')
 
     ARCHITECTURES: Final[str] = 'architectures'
@@ -86,9 +90,6 @@ class OcmApplication:
         if param in self.build_settings:
             return self.build_settings[param]
 
-    def get_version(self) -> str | None:
-        return self.get_setting(self.VERSION)
-
     def get_architectures(self) -> list[str] | None:
         return self.get_setting(self.ARCHITECTURES)
 
@@ -96,13 +97,13 @@ class OcmApplication:
         return self.get_setting(self.COMMIT)
 
     def _generate_gen_dir(self, gen_name: str= 'gen'):
-        return get_root_dir() / gen_name / self.name
+        return util.get_root_dir() / gen_name / self.name
 
     def makedirs(self):
         os.makedirs(self.gen_dir, exist_ok=True)
 
     def get_component_version_spec_template(self) -> ComponentVersionSpec:
-        return ComponentVersionSpec(self.name, self.get_version(), None)
+        return ComponentVersionSpec(self.name, self.version, None)
 
     def create_ctf_from_component_version(
         self,
@@ -138,7 +139,14 @@ class OcmApplication:
         if not self.gen_ctf_dir:
             raise OcmCliException('This command requires setting a ctf directory')
         self.makedirs()
+        if self.gen_ctf_dir.exists():
+            shutil.rmtree(self.gen_ctf_dir)
         self.gen_ctf_dir.mkdir()
+
+        with open(components_file_name) as f:
+            comp = yaml.safe_load(f)
+            self.name = comp['components'][0]['name']
+            self.version = comp['components'][0]['version']
 
         cmd_line = f'add componentversions --create --file {str(self.gen_ctf_dir)}'
         if settings_files:
@@ -169,7 +177,7 @@ class OcmApplication:
         ctx_dir: str = '.'):
 
         for arch in self.get_architectures():
-            version = self.get_version()
+            version = self.version
             arch_tag = _tag_compatible_arch(arch)
             tag = f'{self.name}:{version}-{arch_tag}'
             cmd_line = ['docker', 'buildx', 'build', '--load', '-t', tag, '--platform', arch,
@@ -243,3 +251,44 @@ class OcmApplication:
             shutil.rmtree(old_dir)
         else:
             raise OcmCliException('No transport archive found, must be build first')
+
+
+    def sign(
+            self,
+            signature_name: str,
+            priv_key_file: str,
+            recursive: bool = True,
+            remote: bool = False,
+    ):
+        if not remote and not self.gen_ctf_dir.exists():
+            raise OcmCliException('No transport archive found, must be build first')
+
+        cmd_line = f'sign componentversion --private-key {priv_key_file} --signature {signature_name}'
+        if recursive:
+            cmd_line += ' --recursive'
+
+        if remote:
+            cmd_line += f' {self.ocm_repo}//{self.name}:{self.version}'
+        else:
+            cmd_line += ' ' + str(self.gen_ctf_dir)
+
+        execute_ocm(cmd_line)
+
+
+    def verify(
+            self,
+            signature_name: str,
+            public_key_file: str,
+            remote: bool = False,
+    ):
+        if not remote and not self.gen_ctf_dir.exists():
+            raise OcmCliException('No transport archive found, must be build first')
+
+        cmd_line = f'verify componentversion --public-key {public_key_file} --signature {signature_name}'
+
+        if remote:
+            cmd_line += f' {self.ocm_repo}//{self.name}:{self.version}'
+        else:
+            cmd_line += ' ' + str(self.gen_ctf_dir)
+
+        execute_ocm(cmd_line)
