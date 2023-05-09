@@ -1,5 +1,6 @@
-import os
+import random
 import shutil
+import string
 from pathlib import Path
 
 from cd_tools import OciFetcher
@@ -32,3 +33,16 @@ def get_oci_client(ctx: OcmTestContext, repo_url: str):
         password=ctx.passwd,
     )
 
+
+def get_root_dir() -> Path:
+    path = Path(__file__)
+    return path.parent.parent.absolute()
+
+
+def randomword(length: int):
+   letters = string.ascii_lowercase
+   return ''.join(random.choice(letters) for i in range(length))
+
+
+def get_repo_url(ctx: OcmTestContext):
+    return f'{ctx.repo_prefix}/inttest'
