@@ -119,7 +119,7 @@ def do_transport_and_get_cd(ctx: OcmTestContext, target_repo_url: str, by_value:
     cd = oci.get_component_descriptor_from_registry(comp_name, comp_vers)
     assert cd
     src_spec = f'{repo_url}//{comp_name}:{comp_vers}'
-    cli.transport(src_spec, target_repo_url, force=True, by_value=True, recursive=recursive)
+    cli.transport(src_spec, target_repo_url, force=True, by_value=by_value, recursive=recursive)
     oci = util.get_oci_client(ctx, target_repo_url)
     cd = oci.get_component_descriptor_from_registry(comp_name, comp_vers)
     # debugging
@@ -128,13 +128,30 @@ def do_transport_and_get_cd(ctx: OcmTestContext, target_repo_url: str, by_value:
 
     assert cd
     # check that image references are adjusted to target location
-    chart_reference=f'{target_repo_url}/{provider}/echo/echoserver:0.1.0'
+    if by_value:
+      image_reference = f'{target_repo_url}/google_containers/echoserver:1.10'
+      chart_reference=f'{target_repo_url}/{provider}/echo/echoserver:0.1.0'
+    else:
+      image_reference = f'{repo_url}/google_containers/echoserver:1.10'
+      chart_reference=f'{repo_url}/{provider}/echo/echoserver:0.1.0'
+
     chart = cd.component.resources[0]
     tcc.verify_chart_remote(chart, image_reference=chart_reference)
     image = cd.component.resources[1]
-    image_reference = f'{target_repo_url}/google_containers/echoserver:1.10'
     tcc.verify_image_remote(image, image_reference=image_reference)
     return oci
+
+
+def test_transport_plain(ctx: OcmTestContext):
+    target_repo_url = f'{ctx.repo_prefix}/target-{randomword(4)}'
+    print(f'{target_repo_url=}')
+
+    oci = do_transport_and_get_cd(ctx, target_repo_url, False, False)
+    # check that referenced component was not transferred
+    cd_yaml = oci.get_component_descriptor_from_registry(comp_name, comp_vers, as_yaml=True)
+    print(cd_yaml)
+    with pytest.raises(om.OciImageNotFoundException, match='404') as excinfo:
+      oci.get_component_descriptor_from_registry(ref_comp_name, ref_comp_vers)
 
 
 def test_transport_by_value(ctx: OcmTestContext):
