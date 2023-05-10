@@ -2,6 +2,8 @@ name: Push commit
 run-name: Commit file
 on:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   report:
     runs-on: ubuntu-latest
