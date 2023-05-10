@@ -1,0 +1,21 @@
+name: Push commit
+run-name: Commit file
+on:
+  workflow_dispatch:
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Create report file
+        run: date +%s > report.txt
+      - name: push
+        uses: github-actions-x/commit@v2.9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          push-branch: 'master'
+          commit-message: 'publish'
+          force-add: 'true'
+          files: a.txt b.txt c.txt dirA/ dirB/ dirC/a.txt
+          name: commiter name
+          email: my.github@email.com
