@@ -1,6 +1,7 @@
 gardener-component-model>=0.0.92
 gardener-oci>=1.2049.0
 pytest
+pytest-html
 pyyaml
 requests
 semver
