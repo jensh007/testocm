@@ -70,6 +70,7 @@ def test_ctf_from_ca(ctx: OcmTestContext):
             imageReference: {image_reference}
         ''')
 
+    TestData.prepare_test_env()
     cli = create_comp.create_ctf_from_resources_sources_references(
         test_dir=TestData.test_dir,
         comp_name=comp_name,

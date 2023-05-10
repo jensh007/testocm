@@ -85,6 +85,14 @@ class TestData:
                     imageReference: {pause_image_reference}
     ''')
 
+    def __post_init__(self):
+        # create directory for generated files
+        self.prepare_test_env()
+
+    @classmethod
+    def prepare_test_env(clazz):
+        clazz.test_dir.mkdir(parents=True, exist_ok=True)
+
     def with_reference_yaml(self):
         ref = yaml.safe_load(io.BytesIO(self.reference_yaml.encode()))
         dict = yaml.safe_load(io.BytesIO(self.component_yaml.encode()))
