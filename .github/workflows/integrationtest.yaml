@@ -6,6 +6,8 @@ on:
   schedule:
     - cron: '0 2 * * *'  # every day at 2AM
 # env:
+permissions:
+  contents: write
 jobs:
   test-ocm:
     runs-on: ubuntu-latest
@@ -93,3 +95,13 @@ jobs:
       run: |
         docker container stop registry
         docker container rm -v registry
+    - name: push
+      uses: github-actions-x/commit@v2.9
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        push-branch: 'main'
+        commit-message: 'add test report'
+        force-add: 'true'
+        files: docs/
+        name: github-ation
+        email: noreply@github.com
