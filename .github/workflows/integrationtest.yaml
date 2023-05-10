@@ -102,6 +102,7 @@ jobs:
         push-branch: 'main'
         commit-message: 'add test report'
         force-add: 'true'
+        rebase: 'true'
         files: docs/
         name: github-ation
         email: noreply@github.com
