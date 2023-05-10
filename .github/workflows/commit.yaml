@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Create report file
-        run: date +%s > report.txt
+        run: date +%s > docs/report.txt
       - name: push
         uses: github-actions-x/commit@v2.9
         with:
@@ -16,6 +16,6 @@ jobs:
           push-branch: 'master'
           commit-message: 'publish'
           force-add: 'true'
-          files: a.txt b.txt c.txt dirA/ dirB/ dirC/a.txt
-          name: commiter name
-          email: my.github@email.com
+          files: docs/
+          name: github-ation
+          email: noreply@github.com
