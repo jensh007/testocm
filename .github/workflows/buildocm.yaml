@@ -1,0 +1,25 @@
+name: OCM Build Test
+# trigger manually
+run-name: Build the OCM CLI binary
+on:
+  workflow_dispatch: ~
+# env:
+jobs:
+  build-ocm:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+      with:
+        repository: open-component-model/ocm
+        path: ocm
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.20.2
+    - name: build
+      run: |
+        cd ocm
+        make install
+    - name: test-ocm
+      run: ocm --help
