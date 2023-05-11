@@ -44,7 +44,7 @@ configurations:
           - type: Credentials
             properties:
               username: {ctx.user_name}
-              password: {ctx.passwd}
+              password: "{ctx.passwd}"
 '''
     backup_file = Path(os.getenv('HOME')) / '.ocmconfig.bak'
     config_file = Path(os.getenv('HOME')) / '.ocmconfig'
