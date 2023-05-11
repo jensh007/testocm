@@ -18,12 +18,9 @@ def gen_key_pair(priv_key_path, pub_key_path):
         print('generating new key-pair')
         ocm.execute_ocm(f'create rsakeypair {priv_key_path} {pub_key_path}')
 
-def get_gen_dir():
-    return util.get_root_dir() / 'gen'
-
 @pytest.fixture
 def setup() -> tuple[str, str]:
-    gen_dir = get_gen_dir()
+    gen_dir = util.get_gen_dir()
     priv_key_path = gen_dir / 'priv.key'
     pub_key_path = gen_dir / 'public.key'
     gen_key_pair(priv_key_path, pub_key_path)
@@ -65,7 +62,7 @@ def test_sign_with_reference(ctx: OcmTestContext, setup: tuple[str, str]):
 
 def test_wrong_key(ctx: OcmTestContext, setup: tuple[str, str]):
     priv_key_path, pub_key_path = setup
-    gen_dir = get_gen_dir()
+    gen_dir = util.get_gen_dir()
     wrong_priv_key_path = gen_dir / 'priv_wrong.key'
     wrong_pub_key_path = gen_dir / 'public_wrong.key'
     gen_key_pair(wrong_priv_key_path, wrong_pub_key_path)

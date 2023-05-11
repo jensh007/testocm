@@ -14,10 +14,6 @@ import gci.componentmodel as cm
 
 import util
 
-def get_module_dir() -> Path:
-    path = Path(__file__)
-    return path.parent.parent.absolute()
-
 def download_image(client: oc.Client, image_ref: str):
     # get MIME type:
     blob_ref = client.head_manifest(image_ref, accept=om.MimeTypes.prefer_multiarch)
@@ -31,7 +27,7 @@ def download_image(client: oc.Client, image_ref: str):
 
     print(f'{type(manifest)=}')
     pprint.pprint(manifest.as_dict())
-    work_dir = get_module_dir() / '_out'
+    work_dir = util.get_gen_dir() / 'image-out'
     util.prepare_or_clean_dir(work_dir)
     # write manifest to file:
     manifest_file = work_dir / 'manifest.json'

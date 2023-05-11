@@ -9,17 +9,12 @@ import oci.model as om
 import oci_image
 import util
 
-def get_module_dir() -> Path:
-    path = Path(__file__)
-    return path.parent.parent.absolute()
-
-
 def create_upload_layers_and_config(
     image_handler: oci_image.OciImageCreator,
     architecture: str,
     work_dir: Path,
 ):
-    module_dir = get_module_dir()
+    module_dir = util.get_root_dir()
     bin_file_in = module_dir / 'local' / f'hello.{architecture}'
     bin_file_out = 'hello'
     version_file = 'VERSION'
@@ -38,7 +33,7 @@ def create_upload_layers_and_config(
     # create second layer with version file
     util.prepare_or_clean_dir(work_dir)
     Path.mkdir(work_dir / dest_dir)
-    src_file = get_module_dir() / version_file
+    src_file = util.get_root_dir() / version_file
     dest_file = work_dir / dest_dir / version_file
     shutil.copy(src_file, dest_file)
 
@@ -52,9 +47,9 @@ def create_upload_layers_and_config(
     )
 
 def upload_image(client: oc.Client, image_ref: str, style: oci_image.OciImageCreator.Style):
-    module_dir = get_module_dir()
-    work_dir = module_dir / 'image'
-    out_dir = module_dir / '_out'
+    root_dir = util.get_root_dir()
+    work_dir = root_dir / 'image'
+    out_dir = util.get_gen_dir() / 'image-out'
     image_handler = oci_image.OciImageCreator(
         client,
         image_ref,
@@ -70,9 +65,9 @@ def upload_image(client: oc.Client, image_ref: str, style: oci_image.OciImageCre
 
 
 def upload_multi_arch_image(client: oc.Client, image_ref: str, style: oci_image.OciImageCreator.Style):
-    module_dir = get_module_dir()
-    work_dir = module_dir / 'image'
-    out_dir = module_dir / '_out'
+    root_dir = util.get_root_dir()
+    work_dir = root_dir / 'image'
+    out_dir = util.get_gen_dir() / 'image-out'
     image_handler = oci_image.OciImageCreator(
         client,
         image_ref,

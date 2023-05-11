@@ -30,7 +30,7 @@ class TestData:
     ref_comp_vers = '1.0.0'
     root_dir = util.get_root_dir()
     testdata_dir = root_dir / 'test-data'
-    test_dir =  root_dir / 'gen'
+    test_dir =  util.get_gen_dir()
 
     reference_yaml = textwrap.dedent(f'''\
     componentReferences:

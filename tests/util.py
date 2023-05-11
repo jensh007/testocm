@@ -39,6 +39,10 @@ def get_root_dir() -> Path:
     return path.parent.parent.absolute()
 
 
+def get_gen_dir() -> Path:
+    return get_root_dir() / 'gen'
+
+
 def randomword(length: int):
    letters = string.ascii_lowercase
    return ''.join(random.choice(letters) for i in range(length))
