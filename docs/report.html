@@ -439,7 +439,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
 }
 </script>
     <h1>report.html</h1>
-    <p>Report generated on 10-May-2023 at 14:52:56 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.2.0</p>
+    <p>Report generated on 11-May-2023 at 07:28:39 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.2.0</p>
     <h2>Environment</h2>
     <table id="environment">
       <tr>
@@ -453,7 +453,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <td>{"pluggy": "1.0.0", "pytest": "7.3.1"}</td></tr>
       <tr>
         <td>Platform</td>
-        <td>Linux-5.15.0-1036-azure-x86_64-with-glibc2.35</td></tr>
+        <td>Linux-5.15.0-1037-azure-x86_64-with-glibc2.35</td></tr>
       <tr>
         <td>Plugins</td>
         <td>{"html": "3.2.0", "metadata": "2.0.4"}</td></tr>
@@ -461,7 +461,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <td>Python</td>
         <td>3.10.6</td></tr></table>
     <h2>Summary</h2>
-    <p>19 tests ran in 38.93 seconds. </p>
+    <p>19 tests ran in 38.18 seconds. </p>
     <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">19 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
     <h2>Results</h2>
     <table id="results-table">
@@ -481,16 +481,57 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ca
+Running: [&#x27;ocm&#x27;, &#x27;create&#x27;, &#x27;componentarchive&#x27;, &#x27;-f&#x27;, &#x27;ocm.integrationtest/echo&#x27;, &#x27;1.0.0&#x27;, &#x27;--provider&#x27;, &#x27;ocm.integrationtest&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ca&#x27;]
+
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;sources&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ca&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/sources.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/sources.yaml...
+  processing document 1...
+    processing index 1
+found 1 source
+adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;resources&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ca&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/resources.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/resources.yaml...
+  processing document 1...
+    processing index 1
+  processing document 2...
+    processing index 1
+found 2 resources
+adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;componentarchive&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ca&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;]
+transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+...resource 0(ocm.integrationtest/echo/echoserver:0.1.0)...
+...adding component version...
+
+extracting file &lt;TarInfo &#x27;component-descriptor.yaml&#x27; at 0x7f3622312140&gt;
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_create_component.py::test_ctf_from_component_yaml</td>
-          <td class="col-duration">0.09</td>
+          <td class="col-duration">0.08</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+found 1 component
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+
+extracting file &lt;TarInfo &#x27;component-descriptor.yaml&#x27; at 0x7f3622312140&gt;
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -499,7 +540,25 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+    processing index 2
+found 2 components
+adding component ocm.integrationtest/helper:1.0.0...
+  adding resource ociImage: &quot;name&quot;=&quot;pause_image&quot;,&quot;version&quot;=&quot;3.2.0&quot;...
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+  adding reference ocm.integrationtest/helper: &quot;name&quot;=&quot;childcomp&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+
+extracting file &lt;TarInfo &#x27;component-descriptor.yaml&#x27; at 0x7f3622312140&gt;
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -508,43 +567,127 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+found 1 component
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;-f&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest&#x27;]
+transferring component &quot;ocm.integrationtest/echo&quot;...
+  transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  ...resource 0(ocm.integrationtest/echo/echoserver:0.1.0)...
+  ...adding component version...
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest/component-descriptors/ocm.integrationtest/echo:1.0.0
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_create_component.py::test_push_by_value</td>
-          <td class="col-duration">2.55</td>
+          <td class="col-duration">2.39</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+found 1 component
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;-f&#x27;, &#x27;--copy-resources&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest&#x27;]
+transferring component &quot;ocm.integrationtest/echo&quot;...
+  transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  ...resource 0(ocm.integrationtest/echo/echoserver:0.1.0)...
+  ...resource 1(google_containers/echoserver:1.10)...
+  ...adding component version...
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest/component-descriptors/ocm.integrationtest/echo:1.0.0
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_credentials.py::test_transfer_without_credentials</td>
-          <td class="col-duration">0.59</td>
+          <td class="col-duration">0.58</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;artifacts&#x27;, &#x27;gcr.io/google-containers/pause:3.2&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/pause:3.2&#x27;]
+copying gcr.io/google-containers/pause:3.2 to fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/pause:3.2...
+Error: transferring indexed artifact sha256:4a1c4b21597c1b4415bdbecb28a3296c6b5e23ca4f9feeb599860a1dac6a0108: transferring config blob: unable to add blob (OCI repository images/pause): failed to push: unexpected status: 401 Unauthorized
+
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_credentials.py::test_transfer_with_credentials</td>
-          <td class="col-duration">2.96</td>
+          <td class="col-duration">3.07</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>OCM configuration file read from: /home/runner/.ocmconfig:
+type: generic.config.ocm.software/v1
+configurations: []
+
+Running: [&#x27;ocm&#x27;, &#x27;--cred&#x27;, &#x27;:type=OCIRegistry&#x27;, &#x27;--cred&#x27;, &#x27;:hostname=fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net&#x27;, &#x27;--cred&#x27;, &#x27;username=ocmuser&#x27;, &#x27;--cred&#x27;, &#x27;password=zku!YB+tttUq&#x27;, &#x27;transfer&#x27;, &#x27;artifacts&#x27;, &#x27;gcr.io/google-containers/pause:3.2&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/pause:3.2&#x27;]
+copying gcr.io/google-containers/pause:3.2 to fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/pause:3.2...
+copied 1 from 1 artifact(s) and 1 repositories
+
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_signing.py::test_sign_ctf</td>
-          <td class="col-duration">0.92</td>
+          <td class="col-duration">0.91</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> -----------------------------Captured stdout setup------------------------------ <br/>generating new key-pair
+Running: [&#x27;ocm&#x27;, &#x27;create&#x27;, &#x27;rsakeypair&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/priv.key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/public.key&#x27;]
+created rsa key pair /home/runner/work/testocm/testocm/gen/priv.key[/home/runner/work/testocm/testocm/gen/public.key]
+
+<br/> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+found 1 component
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;sign&#x27;, &#x27;componentversion&#x27;, &#x27;--private-key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/priv.key&#x27;, &#x27;--signature&#x27;, &#x27;inttest-sig&#x27;, &#x27;--recursive&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;]
+applying to version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  resource 0:  &quot;name&quot;=&quot;chart&quot;: digest SHA-256:0b42ef652f942b540940aa90fc4e75b89162bf3cb63d0cbce59f649d7edcae1c[ociArtifactDigest/v1]
+  resource 1:  &quot;name&quot;=&quot;image&quot;: digest SHA-256:cb5c1bddd1b5665e1867a7fa1b5fa843a47ee433bbb75d4293888b71def53229[ociArtifactDigest/v1]
+successfully signed ocm.integrationtest/echo:1.0.0 (digest SHA-256:88b666b21a12c3d17106b998320fb0ae14b4c553fac99c74f921dafef04be4ae)
+
+Running: [&#x27;ocm&#x27;, &#x27;verify&#x27;, &#x27;componentversion&#x27;, &#x27;--public-key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/public.key&#x27;, &#x27;--signature&#x27;, &#x27;inttest-sig&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;]
+applying to version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  resource 0:  &quot;name&quot;=&quot;chart&quot;: digest SHA-256:0b42ef652f942b540940aa90fc4e75b89162bf3cb63d0cbce59f649d7edcae1c[ociArtifactDigest/v1]
+  resource 1:  &quot;name&quot;=&quot;image&quot;: digest SHA-256:cb5c1bddd1b5665e1867a7fa1b5fa843a47ee433bbb75d4293888b71def53229[ociArtifactDigest/v1]
+successfully verified ocm.integrationtest/echo:1.0.0 (digest SHA-256:88b666b21a12c3d17106b998320fb0ae14b4c553fac99c74f921dafef04be4ae)
+
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -553,94 +696,440 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+found 1 component
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest&#x27;]
+transferring component &quot;ocm.integrationtest/echo&quot;...
+  transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+    version &quot;ocm.integrationtest/echo:1.0.0&quot; already present -&gt; skip transport
+
+Running: [&#x27;ocm&#x27;, &#x27;sign&#x27;, &#x27;componentversion&#x27;, &#x27;--private-key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/priv.key&#x27;, &#x27;--signature&#x27;, &#x27;inttest-sig&#x27;, &#x27;--recursive&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest//ocm.integrationtest/echo:1.0.0&#x27;]
+applying to version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  resource 0:  &quot;name&quot;=&quot;chart&quot;: digest SHA-256:46f0142172263505dfca5265672c47ead734fc30c0661839b1d11fc9db78ec84[ociArtifactDigest/v1]
+  resource 1:  &quot;name&quot;=&quot;image&quot;: digest SHA-256:cb5c1bddd1b5665e1867a7fa1b5fa843a47ee433bbb75d4293888b71def53229[ociArtifactDigest/v1]
+successfully signed ocm.integrationtest/echo:1.0.0 (digest SHA-256:1a1a7f425f8f10a8dce6e7abb876de88f8e46223e16bff27cb737bc413fb5568)
+
+Running: [&#x27;ocm&#x27;, &#x27;verify&#x27;, &#x27;componentversion&#x27;, &#x27;--public-key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/public.key&#x27;, &#x27;--signature&#x27;, &#x27;inttest-sig&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest//ocm.integrationtest/echo:1.0.0&#x27;]
+applying to version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  resource 0:  &quot;name&quot;=&quot;chart&quot;: digest SHA-256:46f0142172263505dfca5265672c47ead734fc30c0661839b1d11fc9db78ec84[ociArtifactDigest/v1]
+  resource 1:  &quot;name&quot;=&quot;image&quot;: digest SHA-256:cb5c1bddd1b5665e1867a7fa1b5fa843a47ee433bbb75d4293888b71def53229[ociArtifactDigest/v1]
+successfully verified ocm.integrationtest/echo:1.0.0 (digest SHA-256:1a1a7f425f8f10a8dce6e7abb876de88f8e46223e16bff27cb737bc413fb5568)
+
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_signing.py::test_sign_with_reference</td>
-          <td class="col-duration">1.41</td>
+          <td class="col-duration">1.20</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+    processing index 2
+found 2 components
+adding component ocm.integrationtest/helper:1.0.0...
+  adding resource ociImage: &quot;name&quot;=&quot;pause_image&quot;,&quot;version&quot;=&quot;3.2.0&quot;...
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+  adding reference ocm.integrationtest/helper: &quot;name&quot;=&quot;childcomp&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest&#x27;]
+transferring component &quot;ocm.integrationtest/helper&quot;...
+  transferring version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  ...adding component version...
+transferring component &quot;ocm.integrationtest/echo&quot;...
+  transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+    version &quot;ocm.integrationtest/echo:1.0.0&quot; already present -&gt; skip transport
+
+Running: [&#x27;ocm&#x27;, &#x27;sign&#x27;, &#x27;componentversion&#x27;, &#x27;--private-key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/priv.key&#x27;, &#x27;--signature&#x27;, &#x27;inttest-sig&#x27;, &#x27;--recursive&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest//ocm.integrationtest/helper:1.0.0&#x27;]
+applying to version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  resource 0:  &quot;name&quot;=&quot;pause_image&quot;: digest SHA-256:927d98197ec1141a368550822d18fa1c60bdae27b78b0c004f705f548c07814f[ociArtifactDigest/v1]
+successfully signed ocm.integrationtest/helper:1.0.0 (digest SHA-256:d8bc7465a6d20496238e485cb00a962ceb3ef03f180b6d8e433717eda96035fa)
+
+Running: [&#x27;ocm&#x27;, &#x27;verify&#x27;, &#x27;componentversion&#x27;, &#x27;--public-key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/public.key&#x27;, &#x27;--signature&#x27;, &#x27;inttest-sig&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/inttest//ocm.integrationtest/helper:1.0.0&#x27;]
+applying to version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  resource 0:  &quot;name&quot;=&quot;pause_image&quot;: digest SHA-256:927d98197ec1141a368550822d18fa1c60bdae27b78b0c004f705f548c07814f[ociArtifactDigest/v1]
+successfully verified ocm.integrationtest/helper:1.0.0 (digest SHA-256:d8bc7465a6d20496238e485cb00a962ceb3ef03f180b6d8e433717eda96035fa)
+
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_signing.py::test_wrong_key</td>
-          <td class="col-duration">1.08</td>
+          <td class="col-duration">0.96</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>generating new key-pair
+Running: [&#x27;ocm&#x27;, &#x27;create&#x27;, &#x27;rsakeypair&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/priv_wrong.key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/public_wrong.key&#x27;]
+created rsa key pair /home/runner/work/testocm/testocm/gen/priv_wrong.key[/home/runner/work/testocm/testocm/gen/public_wrong.key]
+
+Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+found 1 component
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;sign&#x27;, &#x27;componentversion&#x27;, &#x27;--private-key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/priv.key&#x27;, &#x27;--signature&#x27;, &#x27;inttest-sig&#x27;, &#x27;--recursive&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;]
+applying to version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  resource 0:  &quot;name&quot;=&quot;chart&quot;: digest SHA-256:74c8401dbc91b969025cd3643d755e77faf5e06df08b03ee80c4172669ecc8f3[ociArtifactDigest/v1]
+  resource 1:  &quot;name&quot;=&quot;image&quot;: digest SHA-256:cb5c1bddd1b5665e1867a7fa1b5fa843a47ee433bbb75d4293888b71def53229[ociArtifactDigest/v1]
+successfully signed ocm.integrationtest/echo:1.0.0 (digest SHA-256:52c2a2408c962fbeedd58349d9475b27c3b2d2f2651f8b0ce66979225bc953fa)
+
+Running: [&#x27;ocm&#x27;, &#x27;verify&#x27;, &#x27;componentversion&#x27;, &#x27;--public-key&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/public_wrong.key&#x27;, &#x27;--signature&#x27;, &#x27;inttest-sig&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;]
+applying to version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  resource 0:  &quot;name&quot;=&quot;chart&quot;: digest SHA-256:74c8401dbc91b969025cd3643d755e77faf5e06df08b03ee80c4172669ecc8f3[ociArtifactDigest/v1]
+  resource 1:  &quot;name&quot;=&quot;image&quot;: digest SHA-256:cb5c1bddd1b5665e1867a7fa1b5fa843a47ee433bbb75d4293888b71def53229[ociArtifactDigest/v1]
+failed verifying signature of ocm.integrationtest/echo:1.0.0: ocm.integrationtest/echo:1.0.0: signature &quot;RSASSA-PKCS1-V1_5&quot; is invalid: signature verification failed, crypto/rsa: verification error
+finished with 1 error(s)
+Error: verifying signature of: ocm.integrationtest/echo:1.0.0: signature &quot;RSASSA-PKCS1-V1_5&quot; is invalid: signature verification failed, crypto/rsa: verification error
+
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_transfer_image.py::test_image_transfer_docker_style</td>
-          <td class="col-duration">0.80</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">test_transfer_image.py::test_image_transfer_oci_style</td>
           <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>/home/runner/work/testocm/testocm/image
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+response manifest upload: 201
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;artifacts&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/hello:0.1.0&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/image-test/hello:0.1.0&#x27;]
+copying fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/hello:0.1.0 to fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/image-test/hello:0.1.0...
+copied 1 from 1 artifact(s) and 1 repositories
+
+<br/> ------------------------------Captured stderr call------------------------------ <br/>2023/05/11 07:28:12 logged in via /home/runner/.docker/config.json
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.docker.distribution.manifest.v2+json&#x27;<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">test_transfer_image.py::test_image_transfer_oci_style</td>
+          <td class="col-duration">0.80</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>/home/runner/work/testocm/testocm/image
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+response manifest upload: 201
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;artifacts&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/hello:0.1.0&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/image-test/hello:0.1.0&#x27;]
+copying fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/hello:0.1.0 to fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/image-test/hello:0.1.0...
+copied 1 from 1 artifact(s) and 1 repositories
+
+<br/> ------------------------------Captured stderr call------------------------------ <br/>2023/05/11 07:28:13 logged in via /home/runner/.docker/config.json
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.oci.image.manifest.v1+json&#x27;<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_transfer_image.py::test_multi_arch_image_transfer_docker_style</td>
-          <td class="col-duration">1.36</td>
+          <td class="col-duration">1.33</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>/home/runner/work/testocm/testocm/image
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+Uploaded multi-arch child manifest: arm64: sha256:0fddde76ce08df21ad5f3a07f3fb18ed1a79edcaf79ba4458714b1d1e14ec141
+/home/runner/work/testocm/testocm/image
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+Uploaded multi-arch child manifest: amd64: sha256:9c78bcb14e72166c6e9f1391fb451acb01fad87418774180e0eb0a7d912756a6
+response manifest upload: 201
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;artifacts&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/hello-multi:0.1.0&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/image-test/hello-multi:0.1.0&#x27;]
+copying fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/hello-multi:0.1.0 to fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/image-test/hello-multi:0.1.0...
+copied 1 from 1 artifact(s) and 1 repositories
+
+<br/> ------------------------------Captured stderr call------------------------------ <br/>2023/05/11 07:28:14 logged in via /home/runner/.docker/config.json
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.docker.distribution.manifest.v2+json&#x27;
+INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.docker.distribution.manifest.v2+json&#x27;
+INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.docker.distribution.manifest.v2+json&#x27;
+INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.docker.distribution.manifest.v2+json&#x27;
+INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.docker.distribution.manifest.list.v2+json&#x27;<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_transfer_image.py::test_multi_arch_image_transfer_oci_style</td>
-          <td class="col-duration">1.34</td>
+          <td class="col-duration">1.33</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>/home/runner/work/testocm/testocm/image
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+Uploaded multi-arch child manifest: arm64: sha256:cc155790b8974fc880e220f700f97877a8c73ea36aadcf330d129cc1791c2499
+/home/runner/work/testocm/testocm/image
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+File /home/runner/work/testocm/testocm/_out/layer.tgz written
+Uploaded multi-arch child manifest: amd64: sha256:d37a06c1b20b4e840fd7a7a8f07603c8c1195acbd7729fadf77abeb026cd511e
+response manifest upload: 201
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;artifacts&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/hello-multi:0.1.0&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/image-test/hello-multi:0.1.0&#x27;]
+copying fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/hello-multi:0.1.0 to fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/image-test/hello-multi:0.1.0...
+copied 1 from 1 artifact(s) and 1 repositories
+
+<br/> ------------------------------Captured stderr call------------------------------ <br/>2023/05/11 07:28:16 logged in via /home/runner/.docker/config.json
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.oci.image.manifest.v1+json&#x27;
+INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.oci.image.manifest.v1+json&#x27;
+INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.oci.image.manifest.v1+json&#x27;
+INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.oci.image.manifest.v1+json&#x27;
+INFO     oci.client:client.py:676 manifest-mimetype: content_type=&#x27;application/vnd.oci.image.index.v1+json&#x27;<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_transport.py::test_transport_plain</td>
-          <td class="col-duration">8.29</td>
+          <td class="col-duration">8.20</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+found 1 component
+adding component ocm.integrationtest/helper:1.0.0...
+  adding resource ociImage: &quot;name&quot;=&quot;pause_image&quot;,&quot;version&quot;=&quot;3.2.0&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;-f&#x27;, &#x27;--copy-resources&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src&#x27;]
+transferring component &quot;ocm.integrationtest/helper&quot;...
+  transferring version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  ...resource 0(google_containers/pause:3.2)...
+  ...adding component version...
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src/component-descriptors/ocm.integrationtest/helper:1.0.0
+Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+    processing index 2
+found 2 components
+adding component ocm.integrationtest/helper:1.0.0...
+  adding resource ociImage: &quot;name&quot;=&quot;pause_image&quot;,&quot;version&quot;=&quot;3.2.0&quot;...
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+  adding reference ocm.integrationtest/helper: &quot;name&quot;=&quot;childcomp&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;-f&#x27;, &#x27;--copy-resources&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src&#x27;]
+transferring component &quot;ocm.integrationtest/echo&quot;...
+  transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  ...resource 0(ocm.integrationtest/echo/echoserver:0.1.0)...
+  ...resource 1(google_containers/echoserver:1.10)...
+  ...adding component version...
+transferring component &quot;ocm.integrationtest/helper&quot;...
+  transferring version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  ...resource 0(google_containers/pause:3.2)...
+  ...adding component version...
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src/component-descriptors/ocm.integrationtest/echo:1.0.0
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;componentversion&#x27;, &#x27;-f&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src//ocm.integrationtest/echo:1.0.0&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-qfef&#x27;]
+transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+...adding component version...
+1 versions transferred
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-qfef/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-qfef/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-qfef/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-qfef/component-descriptors/ocm.integrationtest/helper:1.0.0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     test_transport:test_transport.py:80 target_repo_url=&#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-qfef&#x27;
+WARNING  oci.client:client.py:428 rq against url=&#x27;https://fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/v2/target-qfef/component-descriptors/ocm.integrationtest/helper/manifests/1.0.0&#x27; failed res.status_code=404 res.reason=&#x27;Not Found&#x27; method=&#x27;GET&#x27; b&#x27;{&quot;errors&quot;:[{&quot;code&quot;:&quot;MANIFEST_UNKNOWN&quot;,&quot;message&quot;:&quot;manifest unknown&quot;,&quot;detail&quot;:{&quot;Tag&quot;:&quot;1.0.0&quot;}}]}\n&#x27;<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_transport.py::test_transport_by_value</td>
-          <td class="col-duration">6.61</td>
+          <td class="col-duration">6.13</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+found 1 component
+adding component ocm.integrationtest/helper:1.0.0...
+  adding resource ociImage: &quot;name&quot;=&quot;pause_image&quot;,&quot;version&quot;=&quot;3.2.0&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;-f&#x27;, &#x27;--copy-resources&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src&#x27;]
+transferring component &quot;ocm.integrationtest/helper&quot;...
+  transferring version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  ...resource 0(google_containers/pause:3.2)...
+  ...adding component version...
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src/component-descriptors/ocm.integrationtest/helper:1.0.0
+Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+    processing index 2
+found 2 components
+adding component ocm.integrationtest/helper:1.0.0...
+  adding resource ociImage: &quot;name&quot;=&quot;pause_image&quot;,&quot;version&quot;=&quot;3.2.0&quot;...
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+  adding reference ocm.integrationtest/helper: &quot;name&quot;=&quot;childcomp&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;-f&#x27;, &#x27;--copy-resources&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src&#x27;]
+transferring component &quot;ocm.integrationtest/echo&quot;...
+  transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  ...resource 0(ocm.integrationtest/echo/echoserver:0.1.0)...
+  ...resource 1(google_containers/echoserver:1.10)...
+  ...adding component version...
+transferring component &quot;ocm.integrationtest/helper&quot;...
+  transferring version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  ...resource 0(google_containers/pause:3.2)...
+  ...adding component version...
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src/component-descriptors/ocm.integrationtest/echo:1.0.0
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;componentversion&#x27;, &#x27;-f&#x27;, &#x27;--copy-resources&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src//ocm.integrationtest/echo:1.0.0&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-ydce&#x27;]
+transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+...resource 0(ocm.integrationtest/echo/echoserver:0.1.0)...
+...resource 1(google_containers/echoserver:1.10)...
+...adding component version...
+1 versions transferred
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-ydce/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-ydce/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-ydce/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-ydce/component-descriptors/ocm.integrationtest/helper:1.0.0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     test_transport:test_transport.py:94 target_repo_url=&#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-ydce&#x27;
+WARNING  oci.client:client.py:428 rq against url=&#x27;https://fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/v2/target-ydce/component-descriptors/ocm.integrationtest/helper/manifests/1.0.0&#x27; failed res.status_code=404 res.reason=&#x27;Not Found&#x27; method=&#x27;GET&#x27; b&#x27;{&quot;errors&quot;:[{&quot;code&quot;:&quot;MANIFEST_UNKNOWN&quot;,&quot;message&quot;:&quot;manifest unknown&quot;,&quot;detail&quot;:{&quot;Tag&quot;:&quot;1.0.0&quot;}}]}\n&#x27;<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_transport.py::test_transport_with_reference</td>
-          <td class="col-duration">6.67</td>
+          <td class="col-duration">6.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+found 1 component
+adding component ocm.integrationtest/helper:1.0.0...
+  adding resource ociImage: &quot;name&quot;=&quot;pause_image&quot;,&quot;version&quot;=&quot;3.2.0&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;-f&#x27;, &#x27;--copy-resources&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src&#x27;]
+transferring component &quot;ocm.integrationtest/helper&quot;...
+  transferring version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  ...resource 0(google_containers/pause:3.2)...
+  ...adding component version...
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src/component-descriptors/ocm.integrationtest/helper:1.0.0
+Generating in /home/runner/work/testocm/testocm/gen
+Generating transport archive in /home/runner/work/testocm/testocm/gen/ctf
+Calling ocm: add componentversions --create --file /home/runner/work/testocm/testocm/gen/ctf /home/runner/work/testocm/testocm/gen/component.yaml
+Running: [&#x27;ocm&#x27;, &#x27;add&#x27;, &#x27;componentversions&#x27;, &#x27;--create&#x27;, &#x27;--file&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/component.yaml&#x27;]
+processing /home/runner/work/testocm/testocm/gen/component.yaml...
+  processing document 1...
+    processing index 1
+    processing index 2
+found 2 components
+adding component ocm.integrationtest/helper:1.0.0...
+  adding resource ociImage: &quot;name&quot;=&quot;pause_image&quot;,&quot;version&quot;=&quot;3.2.0&quot;...
+adding component ocm.integrationtest/echo:1.0.0...
+  adding source filesystem: &quot;name&quot;=&quot;source&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+  adding resource helmChart: &quot;name&quot;=&quot;chart&quot;,&quot;version&quot;=&quot;&lt;componentversion&gt;&quot;...
+  adding resource ociImage: &quot;name&quot;=&quot;image&quot;,&quot;version&quot;=&quot;1.10&quot;...
+  adding reference ocm.integrationtest/helper: &quot;name&quot;=&quot;childcomp&quot;,&quot;version&quot;=&quot;1.0.0&quot;...
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;ctf&#x27;, &#x27;-f&#x27;, &#x27;--copy-resources&#x27;, &#x27;/home/runner/work/testocm/testocm/gen/ctf&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src&#x27;]
+transferring component &quot;ocm.integrationtest/echo&quot;...
+  transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+  ...resource 0(ocm.integrationtest/echo/echoserver:0.1.0)...
+  ...resource 1(google_containers/echoserver:1.10)...
+  ...adding component version...
+transferring component &quot;ocm.integrationtest/helper&quot;...
+  transferring version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  ...resource 0(google_containers/pause:3.2)...
+  ...adding component version...
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src/component-descriptors/ocm.integrationtest/echo:1.0.0
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;componentversion&#x27;, &#x27;-f&#x27;, &#x27;--copy-resources&#x27;, &#x27;--recursive&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/src//ocm.integrationtest/echo:1.0.0&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-yywd&#x27;]
+transferring version &quot;ocm.integrationtest/echo:1.0.0&quot;...
+...resource 0(ocm.integrationtest/echo/echoserver:0.1.0)...
+...resource 1(google_containers/echoserver:1.10)...
+  transferring version &quot;ocm.integrationtest/helper:1.0.0&quot;...
+  ...resource 0(google_containers/pause:3.2)...
+  ...adding component version...
+...adding component version...
+2 versions transferred
+
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-yywd/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-yywd/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-yywd/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-yywd/component-descriptors/ocm.integrationtest/echo:1.0.0
+Retrieving component-descriptor from fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-yywd/component-descriptors/ocm.integrationtest/helper:1.0.0
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     test_transport:test_transport.py:105 target_repo_url=&#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/target-yywd&#x27;<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">test_with_ocmconfig.py::test_config</td>
-          <td class="col-duration">1.52</td>
+          <td class="col-duration">1.63</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody></table></body></html>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>OCM configuration file read from: /home/runner/.ocmconfig:
+type: generic.config.ocm.software/v1
+configurations:
+  - type: credentials.config.ocm.software
+    consumers:
+      - identity:
+          type: OCIRegistry
+          hostname: fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net
+        credentials:
+          - type: Credentials
+            properties:
+              username: ocmuser
+              password: zku!YB+tttUq
+
+Running: [&#x27;ocm&#x27;, &#x27;transfer&#x27;, &#x27;artifacts&#x27;, &#x27;gcr.io/google-containers/pause:3.2&#x27;, &#x27;fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/pause:3.2&#x27;]
+copying gcr.io/google-containers/pause:3.2 to fv-az936-390.bsskijqjnnee1gcfr5khm1c1ag.bx.internal.cloudapp.net/images/pause:3.2...
+copied 1 from 1 artifact(s) and 1 repositories
+
+<br/></div></td></tr></tbody></table></body></html>
