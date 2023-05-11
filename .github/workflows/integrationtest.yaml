@@ -99,6 +99,7 @@ jobs:
           echo "Tests failed."
           echo "$now | failed" >> README.md
         fi
+        exit ${res}
     - name: stop docker registry
       if: always()
       run: |
