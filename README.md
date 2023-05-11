@@ -1,4 +1,12 @@
 [![OCM Integration Tests](https://github.com/jensh007/testocm/actions/workflows/integrationtest.yaml/badge.svg?branch=main)](https://jensh007.github.io/testocm/report.html)
 
-# testocm
-Temporary repository for testing
+# Open-Component-Model Integration Test
+
+This repository runs the OCM integration tests. It installs a local OCI registry, performs various OCM commands and checks for the expected results.
+
+## Statistics
+
+Statistics of the last test runs:
+
+Date + Time | Result
+------------|--------
