@@ -4,6 +4,9 @@
 
 This repository runs the OCM integration tests. It installs a local OCI registry, performs various OCM commands and checks for the expected results.
 
+## Test Report
+
+Latest [Test Report](https://jensh007.github.io/testocm/report.html)
 ## Statistics
 
 Statistics of the last test runs:
