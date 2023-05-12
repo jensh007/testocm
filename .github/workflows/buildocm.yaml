@@ -2,11 +2,23 @@ name: OCM Build Test
 # trigger manually
 run-name: Build the OCM CLI
 on:
-  workflow_dispatch: ~
+  workflow_dispatch:
+    inputs:
+      use-release:
+        type: boolean
+        description: use latest pre-built release instead of building from HEAD
+        default: false
 # env:
 jobs:
+  get-ocm:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.use-release }}
+    steps:
+    - name: setup OCM
+      uses: open-component-model/ocm-setup-action@main
   build-ocm:
     runs-on: ubuntu-latest
+    if: ${{ ! inputs.use-release }}
     steps:
     - name: checkout
       uses: actions/checkout@v3
@@ -21,5 +33,9 @@ jobs:
       run: |
         cd ocm
         make install
+  test-ocm:
+    runs-on: ubuntu-latest
+    needs: [get-ocm, build-ocm]
+    steps:
     - name: test-ocm
-      run: ocm --help
+      run: ocm --version
