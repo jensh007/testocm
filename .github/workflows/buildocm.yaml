@@ -1,6 +1,6 @@
 name: OCM Build Test
 # trigger manually
-run-name: Build the OCM CLI binary
+run-name: Build the OCM CLI
 on:
   workflow_dispatch: ~
 # env:
