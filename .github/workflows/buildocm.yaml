@@ -36,6 +36,7 @@ jobs:
         make install
   test-ocm:
     runs-on: ubuntu-latest
+    if: always() # required because only one of the two dependent jobs will run
     needs: [get-ocm, build-ocm]
     steps:
     - name: test-ocm
