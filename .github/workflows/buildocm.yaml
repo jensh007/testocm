@@ -11,33 +11,27 @@ on:
         default: false
 # env:
 jobs:
-  get-ocm:
+  test-ocm:
     runs-on: ubuntu-latest
-    if: ${{ inputs.use-release }}
     steps:
     - name: setup OCM
+      if: ${{ inputs.use-release }}
       uses: open-component-model/ocm-setup-action@main
-  build-ocm:
-    runs-on: ubuntu-latest
-    if: ${{ ! inputs.use-release }}
-    steps:
     - name: checkout
       uses: actions/checkout@v3
+      if: ${{ ! inputs.use-release }}
       with:
         repository: open-component-model/ocm
         path: ocm
     - name: Set up Go
+      if: ${{ ! inputs.use-release }}
       uses: actions/setup-go@v4
       with:
         go-version: 1.20.2
     - name: build
+      if: ${{ ! inputs.use-release }}
       run: |
         cd ocm
         make install
-  test-ocm:
-    runs-on: ubuntu-latest
-    if: always() # required because only one of the two dependent jobs will run
-    needs: [get-ocm, build-ocm]
-    steps:
     - name: test-ocm
       run: ocm --version
