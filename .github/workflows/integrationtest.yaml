@@ -106,7 +106,7 @@ jobs:
         if [ -e ${HOME}/.ocmconfig ]; then
           rm ${HOME}/.ocmconfig
         fi
-        ocm_ver = $(ocm --version)
+        ocm_ver=$(ocm --version)
         echo "OCM-Version: ${ocm_ver}"
         pytest ./tests
         res=$?
