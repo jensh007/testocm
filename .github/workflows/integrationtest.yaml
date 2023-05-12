@@ -2,7 +2,12 @@ name: OCM Integration Tests
 # trigger manually
 run-name: OCM CLI Integration Tests
 on:
-  workflow_dispatch: ~
+  workflow_dispatch:
+    inputs:
+      use-release:
+        type: boolean
+        description: use latest pre-built release instead of building from HEAD
+        default: false
   schedule:
     - cron: '0 2 * * *'  # every day at 2AM
 # env:
@@ -12,10 +17,17 @@ jobs:
   test-ocm:
     runs-on: ubuntu-latest
     steps:
-    - name: checkout
+    - name: checkout inttest
       uses: actions/checkout@v3
+    - name: checkout ocm
+      uses: actions/checkout@v3
+      if: ${{ ! inputs.use-release }}
+      with:
+        repository: open-component-model/ocm
+        path: ocm
     - name: setup OCM
       uses: open-component-model/ocm-setup-action@main
+      if: ${{ inputs.use-release }}
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
@@ -62,6 +74,11 @@ jobs:
           registry:2.8.1
     - name: Install Crane
       uses: imjasonh/setup-crane@v0.1
+    - name: Build OCM
+      if: ${{ ! inputs.use-release }}
+      run: |
+        cd ocm
+        make install
     - name: Build go Test Binaries
       run: |
         env GOOS=linux GOARCH=arm64 GO111MODULE=on go build -o local/hello.arm64 -ldflags '-extldflags "-static"' main.go
@@ -89,15 +106,17 @@ jobs:
         if [ -e ${HOME}/.ocmconfig ]; then
           rm ${HOME}/.ocmconfig
         fi
+        ocm_ver = $(ocm --version)
+        echo "OCM-Version: ${ocm_ver}"
         pytest ./tests
         res=$?
         now=$(date +"%Y-%m-%d %H:%M:%S%z")
         if [ ${res} -eq  0 ]; then
           echo "Tests run successfully."
-          echo "$now | passed" >> README.md
+          echo "$now | ${ocm_ver} | &#9989; (passed)" >> README.md
         else
           echo "Tests failed."
-          echo "$now | failed" >> README.md
+          echo "$now | ${ocm_ver} | &#10060; (failed)" >> README.md
         fi
         exit ${res}
     - name: stop docker registry

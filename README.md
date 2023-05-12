@@ -14,9 +14,9 @@ This repository runs the OCM integration tests. It installs a local OCI registry
 
 Statistics of the last test runs:
 
-Date + Time | Result
-------------|--------
-2023-05-11 07:28:39+0000 | passed
-2023-05-11 07:42:25+0000 | passed
-2023-05-11 12:50:35+0000 | passed
-2023-05-12 02:32:52+0000 | passed
+Date + Time | OCM Version | Result
+------------|--------|--------
+2023-05-11 07:28:39+0000 | ? | &#9989; (passed)
+2023-05-11 07:42:25+0000 | ? | &#10060; (failed)
+2023-05-11 12:50:35+0000 | ? | &#9989; (passed)
+2023-05-12 02:32:52+0000 | ? | &#9989; (passed)
