@@ -2,7 +2,6 @@ name: OCM Build Test
 # trigger manually
 run-name: Build the OCM CLI
 on:
-  push:
   workflow_dispatch:
     inputs:
       use-release:
