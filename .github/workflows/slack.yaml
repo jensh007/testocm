@@ -39,7 +39,7 @@ jobs:
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Status:*\n:${{ job.status }} :fiori-success:"
+                    "text": "*Status:*\n${{ success() && :fiori-success: || :fiori-error: }}"
                   }
                 ]
               },
