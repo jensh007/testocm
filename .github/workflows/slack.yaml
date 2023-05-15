@@ -39,7 +39,7 @@ jobs:
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Status:*\n<:fiori-success"
+                    "text": "*Status:*\n:fiori-success:"
                   }
                 ]
               },
@@ -52,7 +52,7 @@ jobs:
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Action:*\n<https://github.com/jensh007/testocm/actions/workflows/slack.yaml| Github Action"
+                    "text": "*Action:*\n<https://github.com/jensh007/testocm/actions/workflows/slack.yaml>|Github Action"
                   }
                 ]
               },
@@ -60,7 +60,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "<https://jensh007.github.io/testocm/report.html|TestRepordt>"
+                  "text": "<https://jensh007.github.io/testocm/report.html|TestReport>"
                 }
               }
             ]
