@@ -10,9 +10,17 @@ jobs:
     steps:
     - name: checkout inttest
       uses: actions/checkout@v3
+    - name: test simulation
+      run: |
+        res=1
+        now=$(date +"%Y-%m-%d %H:%M:%S%z")
+        echo "TEST_RUN_TS=$now" >> GITHUB_ENV
+        echo "TEST_RESULT=$res" >> GITHUB_ENV
+        exit 1
     - name: Post to a Slack channel
       id: slack
       uses: slackapi/slack-github-action@v1.23.0
+      if: always()
       with:
         # Slack channel id, channel name, or user id to post message.
         # See also: https://api.slack.com/methods/chat.postMessage#channels
@@ -48,7 +56,7 @@ jobs:
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*Commit:*\n${{ github.event.head_commit.url }}"
+                    "text": "*Time:*\n${{ env.TEST_RUN_TS }}"
                   },
                   {
                     "type": "mrkdwn",
