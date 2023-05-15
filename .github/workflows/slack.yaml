@@ -21,13 +21,46 @@ jobs:
         # For posting a simple plain text message
         payload: |
           {
-            "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.head_commit.url }}",
             "blocks": [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": "OCM Integration Test Report",
+                  "emoji": true
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Integration Test:*\nOCM CLI"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Status:*\n<:fiori-success"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*When:*\nAug 10 - Aug 13"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Action:*\n<https://github.com/jensh007/testocm/actions/workflows/slack.yaml| Github Action"
+                  }
+                ]
+              },
               {
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.head_commit.url }}"
+                  "text": "<https://jensh007.github.io/testocm/report.html|TestRepordt>"
                 }
               }
             ]
