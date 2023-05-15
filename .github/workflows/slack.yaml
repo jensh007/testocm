@@ -13,7 +13,9 @@ jobs:
     - name: test simulation
       run: |
         res=1
+        echo ${res}
         now=$(date +"%Y-%m-%d %H:%M:%S%z")
+        echo ${now}
         echo "TEST_RUN_TS=${now}" >> GITHUB_ENV
         echo "TEST_RESULT=${res}" >> GITHUB_ENV
         echo "TEST_RUN_TS=${TEST_RUN_TS}, TEST_RESULT=${TEST_RESULT} "
@@ -30,7 +32,7 @@ jobs:
         # For posting a simple plain text message
         payload: |
           {
-            "text" : "OCM Integration Test Report, Status: ${{ job.status }},
+            "text" : "OCM Integration Test Report, Status: ${{ job.status }}",
             "blocks": [
               {
                 "type": "header",
