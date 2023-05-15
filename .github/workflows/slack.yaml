@@ -39,7 +39,7 @@ jobs:
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Status:*\n:fiori-success:"
+                    "text": "*Status:*\n:${{ job.status }} :fiori-success:"
                   }
                 ]
               },
@@ -48,11 +48,11 @@ jobs:
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*When:*\nAug 10 - Aug 13"
+                    "text": "*Commit:*\n${{ github.event.head_commit.url }}"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Action:*\n<https://github.com/jensh007/testocm/actions/workflows/slack.yaml>|Github Action"
+                    "text": "*Action:*\n<https://github.com/jensh007/testocm/actions/workflows/slack.yaml|Github Action>"
                   }
                 ]
               },
