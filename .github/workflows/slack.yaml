@@ -16,7 +16,7 @@ jobs:
         now=$(date +"%Y-%m-%d %H:%M:%S%z")
         echo "TEST_RUN_TS=$now" >> GITHUB_ENV
         echo "TEST_RESULT=$res" >> GITHUB_ENV
-        exit 1
+        env
     - name: Post to a Slack channel
       id: slack
       uses: slackapi/slack-github-action@v1.23.0
@@ -29,6 +29,7 @@ jobs:
         # For posting a simple plain text message
         payload: |
           {
+            "text" : "OCM Integration Test Report, Status: ${{ job.status }}
             "blocks": [
               {
                 "type": "header",
