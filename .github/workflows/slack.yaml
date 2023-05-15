@@ -19,6 +19,18 @@ jobs:
         # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
         channel-id: 'C057KU48M7Y'
         # For posting a simple plain text message
-        slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.head_commit.url }}"
+        payload: |
+          {
+            "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.head_commit.url }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.head_commit.url }}"
+                }
+              }
+            ]
+          }
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
