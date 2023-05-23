@@ -1,0 +1,29 @@
+name: OCM Integration Tests
+# trigger manually
+run-name: OCM CLI Integration Tests
+on:
+  workflow_dispatch: ~
+  schedule:
+    - cron: '*/5 * * * *' # every 5 min
+jobs:
+  test-ocm:
+    runs-on: ubuntu-latest
+    steps:
+    - name: get-config
+      run: |
+        echo "/etc/hosts"
+        cat /etc/hosts
+        echo ""
+        echo "/etc/resolv.conf"
+        cat /etc/resolv.conf
+    - name: test-fqdn
+      run: |
+        FDQN_NAME=`hostname --fqdn`
+        HNAME=`hostname`
+        echo "working dir is: $PWD"
+        echo "home-dir: $HOME"
+        echo "fqdn hostame is: $FDQN_NAME"
+        if [ "$FDQN_NAME" = "$HNAME" ]; then
+          echo "Failed to get fully qualified hostname: $FQDN_NAME , falling back to hostname"
+          exit 1
+        fi
