@@ -19,7 +19,17 @@ jobs:
         echo ""
         echo "resolvectl status"
         resolvectl status
+        exit 0
+    - name: resolve-test
+      run: |
+        echo "nslookup hostname"
+        nslookup `hostname`
+        lname=`hostname`.local
+        echo "nslookup ${lname}"
+        nslookup ${lname}
+        exit 0
     - name: test-fqdn
+      if: always()
       run: |
         FDQN_NAME=`hostname --fqdn`
         HNAME=`hostname`
