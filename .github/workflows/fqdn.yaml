@@ -1,6 +1,6 @@
-name: OCM Integration Tests
+name: FQDN Diagnosis
 # trigger manually
-run-name: OCM CLI Integration Tests
+run-name: FQDN Diagnosis
 on:
   workflow_dispatch: ~
   schedule:
