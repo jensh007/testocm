@@ -3,8 +3,8 @@ name: FQDN Diagnosis
 run-name: FQDN Diagnosis
 on:
   workflow_dispatch: ~
-  schedule:
-    - cron: '*/5 * * * *' # every 5 min
+#  schedule:
+#    - cron: '*/5 * * * *' # every 5 min
 jobs:
   test-ocm:
     runs-on: ubuntu-latest
