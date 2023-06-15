@@ -8,8 +8,8 @@ on:
         type: boolean
         description: use latest pre-built release instead of building from HEAD
         default: false
-  schedule:
-    - cron: '0 2 * * *'  # every day at 2AM
+#  schedule:
+#    - cron: '0 2 * * *'  # every day at 2AM
 # env:
 permissions:
   contents: write
